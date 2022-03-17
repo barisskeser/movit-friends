@@ -1,9 +1,10 @@
 package com.bbn.movitfriends.domain.service
 
+import com.bbn.movitfriends.domain.model.User
+
 interface FirebaseAuthService {
 
-    fun isLoggedIn(): Boolean
+    suspend fun loginWithEmailAndPassword(email: String, password: String)
 
-    fun loginWithEmailAndPassword(email: String, password: String): Boolean
-
+    suspend fun signInWithEmailAndPassword(email: String, password: String, user: User)
 }

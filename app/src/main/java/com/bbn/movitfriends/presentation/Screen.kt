@@ -14,4 +14,7 @@ sealed class Screen(val route: String){
     object FilterScreen: Screen("filter_screen")
     object ChatScreen: Screen("chat_screen")
     object CoinScreen: Screen("coin_screen")
+    object LoginScreen: Screen("login_screen")
+    object RegisterScreen: Screen("register_screen")
+    object GoogleRegisterScreen: Screen("google_register_screen")
 }

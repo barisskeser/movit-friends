@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.bbn.movitfriends.common.Constants
 import com.bbn.movitfriends.common.NetworkHelper
 import com.bbn.movitfriends.common.Resource
+import com.bbn.movitfriends.common.Result
 import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.use_case.profile.GetUserUseCase
 import com.bbn.movitfriends.domain.use_case.profile.UpdateProfileUseCase
@@ -54,6 +55,16 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun updateProfile(user: User) = viewModelScope.launch{
-        updateProfileUseCase(user)
+        val stateUser = _state.value.user
+        updateProfileUseCase(user).onEach { result ->
+            when (result) {
+                is Result.Success -> {
+                    _state.value = ProfileState(user = stateUser)
+                }
+                is Result.Error -> {
+                    _state.value = ProfileState(error = result.message, user = stateUser)
+                }
+            }
+        }
     }
 }

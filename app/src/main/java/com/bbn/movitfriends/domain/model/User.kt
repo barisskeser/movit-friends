@@ -7,7 +7,7 @@ import kotlin.collections.HashMap
 
 data class User(
     val status: String?,
-    val id: String?,
+    var id: String?,
     val username: String?,
     val fullName: String?,
     val gender: String?,
@@ -39,4 +39,8 @@ fun User.toHashMap(): HashMap<String, Any>{
     map.put("createDate", this.createDate!!)
 
     return map
+}
+
+fun User.setId(id: String){
+    this.id = id
 }

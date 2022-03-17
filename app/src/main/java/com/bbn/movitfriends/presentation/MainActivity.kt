@@ -14,9 +14,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.bbn.movitfriends.presentation.login.LoginScreen
 import com.bbn.movitfriends.presentation.map.MapScreen
 import com.bbn.movitfriends.presentation.message.MessageScreen
 import com.bbn.movitfriends.presentation.message.MessageViewModel
+import com.bbn.movitfriends.presentation.register.RegisterScreen
 import com.bbn.movitfriends.presentation.ui.theme.MovitFriendsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -39,12 +41,17 @@ class MainActivity: ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.MessageScreen.route
+                        startDestination = Screen.LoginScreen.route
                     ) {
                         composable(
-                            route = Screen.MessageScreen.route
+                            route = Screen.LoginScreen.route
                         ) {
-                            MessageScreen(navController)
+                            LoginScreen(navController)
+                        }
+                        composable(
+                            route = Screen.RegisterScreen.route
+                        ){
+                            RegisterScreen(navController)
                         }
                     }
                 }

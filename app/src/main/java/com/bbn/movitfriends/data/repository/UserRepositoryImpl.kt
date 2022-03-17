@@ -6,6 +6,7 @@ import com.bbn.movitfriends.common.Constants
 import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.model.toHashMap
 import com.bbn.movitfriends.domain.repository.UserRepository
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.callbackFlow
@@ -17,9 +18,14 @@ class UserRepositoryImpl @Inject constructor(
 ) : UserRepository {
 
     private val TAG: String = "UserRepository"
+    private var user: DocumentSnapshot? = null
 
     override suspend fun getUserById(uid: String): User {
-        val user = firestore.collection(Constants.USER_COLLECTION).document(uid).get().result
+        firestore.collection(Constants.USER_COLLECTION).document(uid).get().addOnSuccessListener {
+            user = it
+        }.addOnFailureListener{ exception ->
+            throw exception
+        }
         return User(
             username = user?.getString("username"),
             fullName = user?.getString("fullName"),
@@ -33,18 +39,20 @@ class UserRepositoryImpl @Inject constructor(
             status = user?.getString("status"),
             id = user?.getString("id"),
             credit = user?.get("credit") as Int,
-            age = user.get("age") as Int,
-            createDate = user.getTimestamp("time")
+            age = user?.get("age") as Int,
+            createDate = user?.getTimestamp("time")
         )
     }
 
     override suspend fun updateUserById(user: User) {
-        firestore.collection(Constants.USER_COLLECTION).document(user.id!!).update(user.toHashMap()).addOnSuccessListener {
-            Log.d(TAG, "updateUserById: Success")
-        }.addOnFailureListener {
-            Log.d(TAG, "updateUserById: Failure")
-        }.addOnCanceledListener {
-            Log.d(TAG, "updateUserById: Canceled")
+        firestore.collection(Constants.USER_COLLECTION).document(user.id!!).update(user.toHashMap()).addOnFailureListener { exception ->
+            throw exception
+        }
+    }
+
+    override suspend fun signInUser(user: User) {
+        firestore.collection(Constants.USER_COLLECTION).add(user.toHashMap()).addOnFailureListener { exception ->
+            throw exception
         }
     }
 }

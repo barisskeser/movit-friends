@@ -1,4 +1,9 @@
 package com.bbn.movitfriends.presentation.requests
 
-class RequestScreen {
+import androidx.navigation.NavController
+
+fun RequestScreen(
+    navController: NavController
+){
+
 }

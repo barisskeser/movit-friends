@@ -1,4 +1,10 @@
 package com.bbn.movitfriends.presentation.login
 
-class LoginState {
-}
+import androidx.lifecycle.MutableLiveData
+import com.bbn.movitfriends.domain.model.User
+import java.util.ArrayList
+
+data class LoginState(
+    val isLoggedIn: Boolean = false,
+    val error: String? = null
+)

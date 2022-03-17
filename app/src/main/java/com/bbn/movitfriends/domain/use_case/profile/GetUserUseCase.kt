@@ -10,8 +10,7 @@ import java.lang.Exception
 import javax.inject.Inject
 
 class GetUserUseCase @Inject constructor(
-    private val repository: UserRepository,
-    private val loginUser: FirebaseUser?
+    private val repository: UserRepository
 ){
 
     operator fun invoke(uid: String): Flow<Resource<User>> = flow {
