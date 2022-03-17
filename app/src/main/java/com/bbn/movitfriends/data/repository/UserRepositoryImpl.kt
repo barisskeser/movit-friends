@@ -1,17 +1,12 @@
 package com.bbn.movitfriends.data.repository
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.bbn.movitfriends.common.Constants
 import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.model.toHashMap
 import com.bbn.movitfriends.domain.repository.UserRepository
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 class UserRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore

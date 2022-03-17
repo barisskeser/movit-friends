@@ -15,15 +15,11 @@ class FirebaseAuthServiceImpl @Inject constructor(
     private val userRepository: UserRepository
 ) : FirebaseAuthService {
 
-    private fun isLoggedIn(): Boolean {
+    override suspend fun isLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null
     }
 
     override suspend fun loginWithEmailAndPassword(email: String, password: String) {
-
-        if (isLoggedIn())
-            return
-
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
             return@addOnSuccessListener
         }.addOnFailureListener { exception ->
@@ -31,8 +27,8 @@ class FirebaseAuthServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun signInWithEmailAndPassword(email: String, password: String, user: User) {
-        firebaseAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
+    override suspend fun createUserWithEmailAndPassword(email: String, password: String, user: User) {
+        firebaseAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
             it.user?.let { authUser -> user.setId(authUser.uid) }
             CoroutineScope(Dispatchers.IO).launch{
                 userRepository.signInUser(user)
@@ -41,6 +37,4 @@ class FirebaseAuthServiceImpl @Inject constructor(
             throw exception
         }
     }
-
-
 }

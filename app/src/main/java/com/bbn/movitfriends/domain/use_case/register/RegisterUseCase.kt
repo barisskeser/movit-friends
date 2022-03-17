@@ -14,7 +14,7 @@ class RegisterUseCase @Inject constructor(
 
     operator fun invoke(email: String, password: String, user: User): Flow<Result> = flow {
         try {
-            firebaseAuthService.signInWithEmailAndPassword(email, password, user)
+            firebaseAuthService.createUserWithEmailAndPassword(email, password, user)
             emit(Result.Success())
         }catch (e: Exception){
             emit(Result.Error(e.localizedMessage ?: "An unexpected error occured"))

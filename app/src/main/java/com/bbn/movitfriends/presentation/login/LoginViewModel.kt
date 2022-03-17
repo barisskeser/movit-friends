@@ -19,7 +19,12 @@ class LoginViewModel @Inject constructor(
     private val _state = mutableStateOf(LoginState())
     val state: State<LoginState> = _state
 
-    fun loginWithEmailAndPassword(email: String, password: String) {
+    init {
+        // It's for check to already login
+        loginWithEmailAndPassword()
+    }
+
+    fun loginWithEmailAndPassword(email: String = "", password: String = "") {
         loginUseCase(email, password).onEach { result ->
             when (result){
                 is Result.Success -> {

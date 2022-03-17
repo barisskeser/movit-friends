@@ -488,6 +488,16 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/register/RegisterState.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/register/RegisterViewModel.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/requests/RequestScreen.kt">
           <value>
             <set />
