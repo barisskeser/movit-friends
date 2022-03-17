@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "474781874349",
+    "project_id": "movit-friends-cee68",
+    "storage_bucket": "movit-friends-cee68.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474781874349:android:8143b4db573d271010ee24",
+        "android_client_info": {
+          "package_name": "com.bbn.movitfriends"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "474781874349-ule5g4gn5qnjbe5i2qfp1sgq5p4hb4qc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpGvU0OBKnTzTIB2PwtOrb2p7M_DS8aj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "474781874349-ule5g4gn5qnjbe5i2qfp1sgq5p4hb4qc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
