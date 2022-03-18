@@ -3,22 +3,24 @@ package com.bbn.movitfriends.data.repository
 import com.bbn.movitfriends.common.Constants
 import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.model.toHashMap
+import com.bbn.movitfriends.domain.repository.FilterDataStoreManager
 import com.bbn.movitfriends.domain.repository.UserRepository
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val dataStore: FilterDataStoreManager
 ) : UserRepository {
 
     private val TAG: String = "UserRepository"
     private var user: DocumentSnapshot? = null
+    private lateinit var userList: List<User>
 
     override suspend fun getUserById(uid: String): User {
         firestore.collection(Constants.USER_COLLECTION).document(uid).get().addOnSuccessListener {
             user = it
-        }.addOnFailureListener{ exception ->
+        }.addOnFailureListener { exception ->
             throw exception
         }
         return User(
@@ -40,14 +42,72 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateUserById(user: User) {
-        firestore.collection(Constants.USER_COLLECTION).document(user.id!!).update(user.toHashMap()).addOnFailureListener { exception ->
-            throw exception
-        }
+        firestore.collection(Constants.USER_COLLECTION).document(user.id!!).update(user.toHashMap())
+            .addOnFailureListener { exception ->
+                throw exception
+            }
     }
 
     override suspend fun signInUser(user: User) {
-        firestore.collection(Constants.USER_COLLECTION).add(user.toHashMap()).addOnFailureListener { exception ->
+        firestore.collection(Constants.USER_COLLECTION).add(user.toHashMap())
+            .addOnFailureListener { exception ->
+                throw exception
+            }
+    }
+
+    override suspend fun getUsersWithFilter(): List<User> {
+        val fromAge = dataStore.readInt(Constants.FILTER_FROM_AGE_KEY)
+        val toAge = dataStore.readInt(Constants.FILTER_TO_AGE_KEY)
+        val gender = dataStore.readString(Constants.FILTER_GENDER_KEY)
+        val distance = dataStore.readInt(Constants.FILTER_DISTANCE_KEY)
+        val status = dataStore.readString(Constants.FILTER_STATUS_KEY)
+
+        var collection = firestore.collection(Constants.USER_COLLECTION)
+        var task: Query = collection
+
+        fromAge?.let {
+            task = task.whereGreaterThanOrEqualTo("age", it)
+        }
+        toAge?.let {
+            task = task.whereLessThanOrEqualTo("age", it)
+        }
+        gender?.let {
+            if (!it.equals("Both"))
+                task = task.whereEqualTo("gender", it)
+        }
+        distance?.let {
+            // TODO("Calculate Distance")
+        }
+        status?.let {
+            if (!it.equals("Any"))
+                task = task.whereEqualTo("status", it)
+        }
+
+        task.get().addOnSuccessListener { snapshot ->
+            userList = snapshot.map { it.toUser() }
+        }.addOnFailureListener { exception ->
             throw exception
         }
+
+        return userList
+    }
+
+    private fun QueryDocumentSnapshot.toUser(): User {
+        return User(
+            username = this.getString("username"),
+            fullName = this.getString("fullName"),
+            gender = this.getString("gender"),
+            email = this.getString("email"),
+            lat = this.getDouble("lat"),
+            lng = this.getDouble("lng"),
+            isAdBlocked = this.getBoolean("isAdBlocked"),
+            isPremium = this.getBoolean("isPremium"),
+            imageUrl = this.getString("imageUrl"),
+            status = this.getString("status"),
+            id = this.getString("id"),
+            credit = this.get("credit") as Int,
+            age = this.get("age") as Int,
+            createDate = this.getTimestamp("time")
+        )
     }
 }

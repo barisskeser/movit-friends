@@ -183,6 +183,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/data/repository/LocationRepositoryImpl.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/data/repository/MessageRepositoryImpl.kt">
           <value>
             <set />

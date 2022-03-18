@@ -4,10 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bbn.movitfriends.common.Constants
 import com.bbn.movitfriends.domain.repository.FilterDataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.logging.Filter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,23 +24,21 @@ class FilterViewModel @Inject constructor(
 
     private fun getPreferences() = viewModelScope.launch {
         _state.value = FilterState(
-            beginAge = dataStore.readInt("beginAge") ?: 20,
-            endAge = dataStore.readInt("endAge") ?: 30,
-            gender = dataStore.readString("gender") ?: "Both",
-            distance = dataStore.readInt("distance") ?: 50,
-            status = dataStore.readString("status") ?: "Any"
+            beginAge = dataStore.readInt(Constants.FILTER_FROM_AGE_KEY) ?: 20,
+            endAge = dataStore.readInt(Constants.FILTER_TO_AGE_KEY) ?: 30,
+            gender = dataStore.readString(Constants.FILTER_GENDER_KEY) ?: "Both",
+            distance = dataStore.readInt(Constants.FILTER_DISTANCE_KEY) ?: 50,
+            status = dataStore.readString(Constants.FILTER_STATUS_KEY) ?: "Any"
         )
     }
 
-    fun setStringPreferences(map: Map<String, String>) = viewModelScope.launch {
-        map.onEach {
-            dataStore.saveString(it.key, it.value)
-        }
+    fun setStringPreferences(key: String, value: String) = viewModelScope.launch {
+        dataStore.saveString(key, value)
+        getPreferences()
     }
 
-    fun setIntPreferences(map: Map<String, Int>) = viewModelScope.launch {
-        map.onEach {
-            dataStore.saveInt(it.key, it.value)
-        }
+    fun setIntPreferences(key: String, value: String) = viewModelScope.launch {
+        dataStore.saveString(key, value)
+        getPreferences()
     }
 }
