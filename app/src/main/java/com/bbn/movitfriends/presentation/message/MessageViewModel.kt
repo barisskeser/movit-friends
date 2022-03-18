@@ -24,27 +24,25 @@ class MessageViewModel @Inject constructor(
     private val sendMessageUseCase: SendMessageUseCase,
     private val networkHelper: NetworkHelper,
     savedStateHandle: SavedStateHandle
-): ViewModel() {
+) : ViewModel() {
     private val _state = mutableStateOf(MessageState())
     val state: State<MessageState> = _state
 
     private val TAG: String = this::class.java.simpleName
 
     init {
-        if (networkHelper.isNetworkConnected())
-            //getMessages(it)
-        else {
+        if (networkHelper.isNetworkConnected()) {
+            savedStateHandle.get<String>(Constants.PARAM_USER_ID)?.let {
+                getMessages(it)
+            }
+        } else {
             _state.value = MessageState(error = "Device is not connected to network")
-            println("İs")
-        }
-        savedStateHandle.get<String>(Constants.PARAM_USER_ID)?.let {
-
         }
     }
 
-    private fun getMessages(uid: String){
+    private fun getMessages(uid: String) {
         messageUseCase(uid).onEach { result ->
-            when(result){
+            when (result) {
                 is Resource.Success -> {
                     _state.value = MessageState(messageList = result.data)
                 }
@@ -52,7 +50,8 @@ class MessageViewModel @Inject constructor(
                     _state.value = MessageState(isLoading = true)
                 }
                 is Resource.Error -> {
-                    _state.value = MessageState(error = result.message ?: "An unexpected error occured")
+                    _state.value =
+                        MessageState(error = result.message ?: "An unexpected error occured")
                 }
             }
         }.launchIn(viewModelScope)

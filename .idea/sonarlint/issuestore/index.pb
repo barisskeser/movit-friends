@@ -17,8 +17,6 @@ Kapp/src/main/java/com/bbn/movitfriends/presentation/profile/ProfileState.kt,d\
 Mapp/src/main/java/com/bbn/movitfriends/domain/repository/RequestRepository.kt,a\a\aad5eca20464672969fe052e9227960bd445eece
 |
 Lapp/src/main/java/com/bbn/movitfriends/presentation/requests/RequestState.kt,9\c\9c8053f01be6832e08a6582ee76ef4a78680aeaa
-u
-Eapp/src/main/java/com/bbn/movitfriends/presentation/chat/ChatState.kt,9\e\9ef1fc905ca0b8e00dcf3a84bf34501d66c3cf56
 s
 Capp/src/main/java/com/bbn/movitfriends/presentation/map/MapState.kt,5\0\5023520ba1575ab60ae196363cd57dba091f3494
 |
@@ -55,14 +53,10 @@ k
 ;app/src/main/java/com/bbn/movitfriends/domain/model/Chat.kt,9\7\97f615c77e898240c2552ef9e9542810f061fb03
 ’
 bapp/src/main/java/com/bbn/movitfriends/presentation/settings/update_profile/UpdateProfileScreen.kt,0\c\0c06e56c7f47cfb0b226982aac0e41be6592d8f2
-y
-Iapp/src/main/java/com/bbn/movitfriends/presentation/chat/ChatViewModel.kt,a\d\ad172a25f023bfad2a3c6f829d8438b50c1ddf02
 €
 Papp/src/main/java/com/bbn/movitfriends/presentation/requests/RequestViewModel.kt,6\c\6ce7daa012a00a294e4793a452df02f42500fd7a
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-@
-app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 
 Oapp/src/main/java/com/bbn/movitfriends/presentation/friends/FriendsViewModel.kt,e\0\e0562eeb6408097822b770182a62d90edb197414
 t
@@ -83,8 +77,6 @@ Napp/src/main/java/com/bbn/movitfriends/domain/use_case/chat/GetChatsUseCase.kt
 Rapp/src/main/java/com/bbn/movitfriends/domain/use_case/friend/GetFriendsUseCase.kt,a\4\a4c8ae5c96abeb0d4c9b0253f52cfb319f716ea9
 ƒ
 Sapp/src/main/java/com/bbn/movitfriends/domain/use_case/message/GetMessageUseCase.kt,5\b\5bfdc493ed8679b69d134811661ab4dfee928881
-
-Oapp/src/main/java/com/bbn/movitfriends/presentation/message/MessageViewModel.kt,a\9\a97302615cc82e40ac2303993f2cb6d2147f63b9
 g
 7app/src/main/java/com/bbn/movitfriends/common/Result.kt,d\c\dc4afbf3cabfde521a0a10f7d6f7150696d5ce89
 }
@@ -97,9 +89,7 @@ z
 Japp/src/main/java/com/bbn/movitfriends/domain/repository/UserRepository.kt,1\c\1cd6dddb84786f44c26e5e0bd093177052facec1
 
 Qapp/src/main/java/com/bbn/movitfriends/presentation/register/RegisterViewModel.kt,b\9\b9782c99401293f9c76d25590ab2b883ec231e5f
-j
-:app/src/main/java/com/bbn/movitfriends/common/Constants.kt,c\e\ce17b8198a15166e8663952ffe4eee046c51079b
-f
-6app/src/main/java/com/bbn/movitfriends/di/AppModule.kt,e\5\e5b61bad933ec12b2a8dca1778e48fe7ddb67369
 m
 =app/src/main/java/com/bbn/movitfriends/presentation/Screen.kt,d\6\d606efd74c59e13c114179e53fba163e154a9cd5
+|
+Lapp/src/main/java/com/bbn/movitfriends/domain/service/FirebaseAuthService.kt,8\1\810c8530b691ebff4ba210cff99b5f35bccc1bc2

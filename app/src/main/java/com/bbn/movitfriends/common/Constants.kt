@@ -8,4 +8,5 @@ object Constants {
     const val MESSAGE_COLLECTION = "messages"
     const val CHAT_COLLECTION = "chats"
     const val PARAM_USER_ID = "userId"
+    const val FILTER_PREFERENCES = "filter_preferences"
 }

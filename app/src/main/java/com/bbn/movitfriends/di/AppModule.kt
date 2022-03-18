@@ -1,26 +1,29 @@
 package com.bbn.movitfriends.di
 
-import com.bbn.movitfriends.common.Constants
+import android.app.Application
+import android.content.Context
 import com.bbn.movitfriends.data.repository.*
 import com.bbn.movitfriends.data.service.FirebaseAuthServiceImpl
-import com.bbn.movitfriends.domain.model.Message
-import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.repository.*
 import com.bbn.movitfriends.domain.service.FirebaseAuthService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.type.LatLng
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideAppContext(context: Application): Context {
+        return context
+    }
 
     @Provides
     @Singleton
@@ -74,6 +77,12 @@ object AppModule {
     @Singleton
     fun provideChatRepository(firestore: FirebaseFirestore, loginUser: FirebaseUser?, userRepository: UserRepository, messageRepository: MessageRepository): ChatRepository{
         return ChatRepositoryImpl(firestore, userRepository, messageRepository, loginUser)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataStore(context: Application): FilterDataStoreManager {
+        return FilterDataStoreManagerImpl(context)
     }
 
 }
