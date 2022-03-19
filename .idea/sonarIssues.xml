@@ -443,6 +443,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/domain/use_case/profile/GetUsersUseCase.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/domain/use_case/profile/UpdateProfileUseCase.kt">
           <value>
             <set />
@@ -524,6 +529,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/map/MapScreen.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/map/MapState.kt">
           <value>
             <set />
           </value>
