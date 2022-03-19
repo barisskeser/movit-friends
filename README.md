@@ -2,6 +2,7 @@
 ### It's like a map based social media app. You can meet new people, if you want you can add and talk them.
 
 ## Developed with:
+- Firebase
 - MVVM Architecture
 - Jetpack Compose
 - Kotlin Coroutines
