@@ -1,6 +1,6 @@
 # movit-friends
 
-## Developed With:
+## Developed with:
 - MVVM Architecture
 - Jetpack Compose
 - Kotlin Coroutines
