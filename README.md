@@ -1,5 +1,5 @@
 # Movit Friends App
-### It's like a map based social media app. You can meet new people, if you want you can add them and talk.
+### It's like a map based social media app. You can meet new people, if you want you can add and talk them.
 
 ## Developed with:
 - MVVM Architecture
