@@ -8,6 +8,7 @@
 - Kotlin Coroutines
 - DataStore Preferences
 - Dagger Hilt
+- Live Data
 
 <!-- CREDITS -->
 <h2 id="credits"> :scroll: Credits</h2>
