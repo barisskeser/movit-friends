@@ -15,4 +15,6 @@ interface UserRepository {
     suspend fun signInUser(user: User)
 
     suspend fun getUsersWithFilter(): List<User>
+
+    suspend fun isMe(uid: String): Boolean
 }

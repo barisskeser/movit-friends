@@ -57,6 +57,16 @@ class FriendRepositoryImpl @Inject constructor(
         return _friendList
     }
 
+    override suspend fun isMyFriend(uid: String): Boolean {
+        return firestore.collection(Constants.REQUEST_COLLECTION)
+            .whereEqualTo("status", "accepted")
+            .whereArrayContains("from", listOf(uid, loginUser?.uid))
+            .whereArrayContains("to", listOf(uid, loginUser?.uid))
+            .get()
+            .result
+            ?.size() != 0
+    }
+
     private suspend fun friendToUser(uid: String): User?{
         return userRepository.getUserById(uid)
     }

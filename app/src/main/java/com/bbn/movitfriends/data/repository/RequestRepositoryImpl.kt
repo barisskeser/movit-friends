@@ -7,6 +7,7 @@ import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.repository.RequestRepository
 import com.bbn.movitfriends.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.callbackFlow
@@ -47,6 +48,30 @@ class RequestRepositoryImpl @Inject constructor(
             }
 
         return _requestList
+    }
+
+    override suspend fun sendRequest(uid: String) {
+        val map = HashMap<String, Any>()
+        map.put("from", loginUser!!.uid)
+        map.put("to", uid)
+        map.put("status", "sent")
+        map.put("time", FieldValue.serverTimestamp())
+
+        firestore.collection(Constants.REQUEST_COLLECTION).add(map).addOnFailureListener { exception ->
+            throw exception
+        }
+    }
+
+    override suspend fun getRequestState(uid: String): String? {
+
+        val result = firestore.collection(Constants.REQUEST_COLLECTION)
+            .whereEqualTo("status", "accepted")
+            .whereArrayContains("from", listOf(uid, loginUser?.uid))
+            .whereArrayContains("to", listOf(uid, loginUser?.uid))
+            .get()
+            .result?.first()
+
+        return result?.getString("status")
     }
 
     private suspend fun requestToUser(uid: String): User?{

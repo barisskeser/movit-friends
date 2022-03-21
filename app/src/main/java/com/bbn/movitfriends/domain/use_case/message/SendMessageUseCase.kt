@@ -17,6 +17,7 @@ class SendMessageUseCase @Inject constructor(
 
     private val TAG: String? = this::class.simpleName
 
+    // TODO("Hata Repoda fırlatılacak, burada yakalanacak")
     suspend operator fun invoke(message: Message) {
         if (message.text.isNullOrBlank()){
             throw InvalidMessageException("The text of message can't be blank")

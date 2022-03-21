@@ -5,12 +5,14 @@ import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.model.toHashMap
 import com.bbn.movitfriends.domain.repository.FilterDataStoreManager
 import com.bbn.movitfriends.domain.repository.UserRepository
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.type.DateTime
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
+    private val currentUser: FirebaseUser,
     private val dataStore: FilterDataStoreManager
 ) : UserRepository {
 
@@ -90,6 +92,10 @@ class UserRepositoryImpl @Inject constructor(
         }
 
         return userList
+    }
+
+    override suspend fun isMe(uid: String): Boolean {
+        return currentUser.uid == uid
     }
 
     private fun QueryDocumentSnapshot.toUser(): User {

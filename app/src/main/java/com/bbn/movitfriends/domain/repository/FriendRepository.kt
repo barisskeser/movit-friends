@@ -10,4 +10,5 @@ interface FriendRepository{
 
     suspend fun getFriends(): MutableLiveData<ArrayList<User>>
 
+    suspend fun isMyFriend(uid: String): Boolean
 }

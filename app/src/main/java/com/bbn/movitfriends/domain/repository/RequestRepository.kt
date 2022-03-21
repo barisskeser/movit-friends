@@ -8,4 +8,7 @@ interface RequestRepository {
 
     suspend fun getRequests(): MutableLiveData<ArrayList<User>>
 
+    suspend fun sendRequest(uid: String)
+
+    suspend fun getRequestState(uid: String): String?
 }
