@@ -23,6 +23,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../CleanArcCryptoApp/app/src/main/java/com/baris/cleanarccryptoapp/presentation/coin_detail/CoinDetailViewModel.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../CleanArcCryptoApp/app/src/main/java/com/baris/cleanarccryptoapp/presentation/coin_list/CoinListViewModel.kt">
           <value>
             <set />
@@ -49,6 +54,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/build/generated/source/kapt/debug/com/bbn/movitfriends/presentation/Hilt_MainActivity.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/build/tmp/kapt3/stubs/debug/com/bbn/movitfriends/di/AppModule.java">
           <value>
             <set />
           </value>
@@ -89,6 +99,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/baris/movitfriends/presentation/MainActivity.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/BlankFragment.kt">
           <value>
             <set />
           </value>
@@ -413,6 +428,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/domain/use_case/login/IsLoginUseCase.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/domain/use_case/login/LoginUseCase.kt">
           <value>
             <set />
@@ -478,12 +498,27 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/buy_coin/CoinViewModel.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/chat/ChatScreen.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/chat/ChatState.kt">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/chat/ChatViewModel.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/chat/component/ChatItem.kt">
           <value>
             <set />
           </value>
@@ -558,6 +593,21 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/message/component/MessageItem.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/message/component/ProfileItem_MessageScreen.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/ProfileScreen.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/ProfileState.kt">
           <value>
             <set />
@@ -628,6 +678,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/ui/theme/Color.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/example/movitfriends/MovitApp.kt">
           <value>
             <set />
@@ -663,12 +718,92 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/drawable/ic_back.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/drawable/ic_bell.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/drawable/ic_dotmenu.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/drawable/ic_edit.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/drawable/ic_message.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/drawable/ic_settings.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/res/layout/item.xml">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/build.gradle">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/build.gradle">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/src/main/java/com/baris/sudokutcpsocket/KatilActivity.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/src/main/java/com/baris/sudokutcpsocket/MainActivity.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/src/main/java/com/baris/sudokutcpsocket/OlusturActivity.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/src/main/java/com/baris/sudokutcpsocket/Solver.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/src/main/java/com/baris/sudokutcpsocket/SudokuBoard.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/src/main/res/layout/activity_game.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/src/main/res/layout/activity_main.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/src/main/res/values-night/strings.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../SudokuTCPSocket/app/src/main/res/values/strings.xml">
           <value>
             <set />
           </value>

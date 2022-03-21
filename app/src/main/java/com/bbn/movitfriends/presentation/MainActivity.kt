@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -15,10 +16,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.bbn.movitfriends.presentation.chat.component.ChatItem
 import com.bbn.movitfriends.presentation.login.LoginScreen
 import com.bbn.movitfriends.presentation.map.MapScreen
 import com.bbn.movitfriends.presentation.message.MessageScreen
 import com.bbn.movitfriends.presentation.message.MessageViewModel
+import com.bbn.movitfriends.presentation.profile.ProfileScreen
 import com.bbn.movitfriends.presentation.register.RegisterScreen
 import com.bbn.movitfriends.presentation.ui.theme.MovitFriendsTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,7 +43,13 @@ class MainActivity: ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    DefaultPreview()
+                    Column {
+                        ChatItem()
+                        ChatItem()
+                        ChatItem()
+                    }
+
+                /*DefaultPreview()
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
@@ -56,7 +65,7 @@ class MainActivity: ComponentActivity() {
                         ){
                             RegisterScreen(navController)
                         }
-                    }
+                    }*/
                 }
             }
         }

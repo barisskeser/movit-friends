@@ -17,8 +17,7 @@ class LoginUseCase @Inject constructor(
 
     operator fun invoke(email: String, password: String): Flow<Result> = flow{
         try {
-            if(!firebaseAuthService.isLoggedIn())
-                firebaseAuthService.loginWithEmailAndPassword(email, password)
+            firebaseAuthService.loginWithEmailAndPassword(email, password)
             emit(Result.Success())
         }catch (e: Exception){
             emit(Result.Error(e.localizedMessage ?: "An unexpected error occured"))

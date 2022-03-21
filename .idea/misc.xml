@@ -3,6 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/baris/AndroidStudioProjects/MovitFriends/app/src/main/res/drawable/ic_back.xml" value="0.197" />
+        <entry key="..\:/Users/baris/AndroidStudioProjects/MovitFriends/app/src/main/res/drawable/ic_bell.xml" value="0.197" />
+        <entry key="..\:/Users/baris/AndroidStudioProjects/MovitFriends/app/src/main/res/drawable/ic_dotmenu.xml" value="0.197" />
+        <entry key="..\:/Users/baris/AndroidStudioProjects/MovitFriends/app/src/main/res/drawable/ic_edit.xml" value="0.197" />
+        <entry key="..\:/Users/baris/AndroidStudioProjects/MovitFriends/app/src/main/res/drawable/ic_message.xml" value="0.197" />
+        <entry key="..\:/Users/baris/AndroidStudioProjects/MovitFriends/app/src/main/res/drawable/ic_settings.xml" value="0.197" />
+        <entry key="..\:/Users/baris/AndroidStudioProjects/MovitFriends/app/src/main/res/layout/blank_fragment.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/baris/AndroidStudioProjects/MovitFriends/app/src/main/res/layout/item.xml" value="0.36666666666666664" />
       </map>
     </option>

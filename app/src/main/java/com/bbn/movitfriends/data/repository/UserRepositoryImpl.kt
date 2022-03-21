@@ -6,6 +6,7 @@ import com.bbn.movitfriends.domain.model.toHashMap
 import com.bbn.movitfriends.domain.repository.FilterDataStoreManager
 import com.bbn.movitfriends.domain.repository.UserRepository
 import com.google.firebase.firestore.*
+import com.google.type.DateTime
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -13,7 +14,6 @@ class UserRepositoryImpl @Inject constructor(
     private val dataStore: FilterDataStoreManager
 ) : UserRepository {
 
-    private val TAG: String = "UserRepository"
     private var user: DocumentSnapshot? = null
     private lateinit var userList: List<User>
 
@@ -24,25 +24,25 @@ class UserRepositoryImpl @Inject constructor(
             throw exception
         }
         return User(
-            username = user?.getString("username"),
-            fullName = user?.getString("fullName"),
-            gender = user?.getString("gender"),
-            email = user?.getString("email"),
+            username = user?.getString("username")!!,
+            fullName = user?.getString("fullName")!!,
+            gender = user?.getString("gender")!!,
+            email = user?.getString("email")!!,
             lat = user?.getDouble("lat"),
             lng = user?.getDouble("lng"),
-            isAdBlocked = user?.getBoolean("isAdBlocked"),
-            isPremium = user?.getBoolean("isPremium"),
-            imageUrl = user?.getString("imageUrl"),
-            status = user?.getString("status"),
-            id = user?.getString("id"),
+            isAdBlocked = user?.getBoolean("isAdBlocked")!!,
+            isPremium = user?.getBoolean("isPremium")!!,
+            imageUrl = user?.getString("imageUrl")!!,
+            status = user?.getString("status")!!,
+            id = user?.getString("id")!!,
             credit = user?.get("credit") as Int,
-            age = user?.get("age") as Int,
-            createDate = user?.getTimestamp("time")
+            birthDate = user?.get("birthDate") as DateTime?,
+            createDate = user?.getString("createDate")!!
         )
     }
 
     override suspend fun updateUserById(user: User) {
-        firestore.collection(Constants.USER_COLLECTION).document(user.id!!).update(user.toHashMap())
+        firestore.collection(Constants.USER_COLLECTION).document(user.id).update(user.toHashMap())
             .addOnFailureListener { exception ->
                 throw exception
             }
@@ -62,7 +62,7 @@ class UserRepositoryImpl @Inject constructor(
         val distance = dataStore.readInt(Constants.FILTER_DISTANCE_KEY)
         val status = dataStore.readString(Constants.FILTER_STATUS_KEY)
 
-        var collection = firestore.collection(Constants.USER_COLLECTION)
+        val collection = firestore.collection(Constants.USER_COLLECTION)
         var task: Query = collection
 
         fromAge?.let {
@@ -94,20 +94,20 @@ class UserRepositoryImpl @Inject constructor(
 
     private fun QueryDocumentSnapshot.toUser(): User {
         return User(
-            username = this.getString("username"),
-            fullName = this.getString("fullName"),
-            gender = this.getString("gender"),
-            email = this.getString("email"),
+            username = this.getString("username")!!,
+            fullName = this.getString("fullName")!!,
+            gender = this.getString("gender")!!,
+            email = this.getString("email")!!,
             lat = this.getDouble("lat"),
             lng = this.getDouble("lng"),
-            isAdBlocked = this.getBoolean("isAdBlocked"),
-            isPremium = this.getBoolean("isPremium"),
-            imageUrl = this.getString("imageUrl"),
-            status = this.getString("status"),
-            id = this.getString("id"),
+            isAdBlocked = this.getBoolean("isAdBlocked")!!,
+            isPremium = this.getBoolean("isPremium")!!,
+            imageUrl = this.getString("imageUrl")!!,
+            status = this.getString("status")!!,
+            id = this.getString("id")!!,
             credit = this.get("credit") as Int,
-            age = this.get("age") as Int,
-            createDate = this.getTimestamp("time")
+            birthDate = this.get("birthDate") as DateTime?,
+            createDate = this.getString("createDate")!!
         )
     }
 }
