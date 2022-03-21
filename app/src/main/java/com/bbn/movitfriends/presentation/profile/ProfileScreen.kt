@@ -40,28 +40,41 @@ fun ProfileScreen(
 
     state = updateState(viewModel = viewModel)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        state.user?.let {user ->
-            TopBar(user.username)
-            Spacer(modifier = Modifier.height(1.dp))
-            ImageSection(path = user.imageUrl)
-            Spacer(modifier = Modifier.height(4.dp))
-            NameSection(
-                name = user.fullName,
-                uid = user.id,
-                status = user.status,
-                navController = navController,
-                viewModel = viewModel
-            )
-            Spacer(Modifier.height(8.dp))
-            AboutSection(user.about)
-            Spacer(Modifier.height(8.dp))
-            MapSection()
+    Box(Modifier.fillMaxSize()){
+        Column() {
+            state.user?.let {user ->
+                TopBar(user.username)
+                Spacer(modifier = Modifier.height(1.dp))
+                ImageSection(path = user.imageUrl)
+                Spacer(modifier = Modifier.height(4.dp))
+                NameSection(
+                    name = user.fullName,
+                    uid = user.id,
+                    status = user.status,
+                    navController = navController,
+                    viewModel = viewModel
+                )
+                Spacer(Modifier.height(8.dp))
+                AboutSection(user.about)
+                Spacer(Modifier.height(8.dp))
+                MapSection()
+            }
         }
 
+        if(state.error != null){
+            Text(
+                text = state.error!!,
+                color = MaterialTheme.colors.error,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .align(Alignment.Center)
+            )
+        }
+        if(state.isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
     }
 }
 
