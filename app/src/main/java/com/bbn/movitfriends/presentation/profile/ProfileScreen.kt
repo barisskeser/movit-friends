@@ -30,7 +30,6 @@ import com.skydoves.landscapist.glide.GlideImage
 
 
 private val actionButtonImage: MutableState<Int> = mutableStateOf(R.drawable.ic_message)
-private lateinit var state: ProfileState
 
 @Composable
 fun ProfileScreen(
@@ -38,12 +37,15 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
 
-    state = updateState(viewModel = viewModel)
+    val state = viewModel.state
 
     Box(Modifier.fillMaxSize()){
         Column() {
-            state.user?.let {user ->
-                TopBar(user.username)
+            state.value.user?.let {user ->
+                TopBar(
+                    username = user.username,
+                    state = state
+                )
                 Spacer(modifier = Modifier.height(1.dp))
                 ImageSection(path = user.imageUrl)
                 Spacer(modifier = Modifier.height(4.dp))
@@ -52,7 +54,8 @@ fun ProfileScreen(
                     uid = user.id,
                     status = user.status,
                     navController = navController,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    state = state
                 )
                 Spacer(Modifier.height(8.dp))
                 AboutSection(user.about)
@@ -61,9 +64,9 @@ fun ProfileScreen(
             }
         }
 
-        if(state.error != null){
+        if(state.value.error != null){
             Text(
-                text = state.error!!,
+                text = state.value.error!!,
                 color = MaterialTheme.colors.error,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -72,19 +75,16 @@ fun ProfileScreen(
                     .align(Alignment.Center)
             )
         }
-        if(state.isLoading) {
+        if(state.value.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }
 }
 
-private fun updateState(viewModel: ProfileViewModel): ProfileState {
-    return viewModel.state.value
-}
-
 @Composable
 private fun TopBar(
-    username: String
+    username: String,
+    state: State<ProfileState>
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -113,7 +113,7 @@ private fun TopBar(
             )
         }
 
-        if(!state.isMe)
+        if(!state.value.isMe)
             Icon(
                 imageVector = Icons.Default.Edit,
                 contentDescription = "Settings",
@@ -165,7 +165,8 @@ private fun NameSection(
     uid: String,
     status: String,
     navController: NavController,
-    viewModel: ProfileViewModel
+    viewModel: ProfileViewModel,
+    state: State<ProfileState>
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -195,34 +196,32 @@ private fun NameSection(
             )
         }
 
-        if(!state.isMe){
+        if(!state.value.isMe){
             Button(
                 modifier = Modifier
                     .padding(end = 15.dp)
                     .height(50.dp)
                     .clip(CircleShape),
                 onClick = {
-                    if (state.requestState == "accepted")
+                    if (state.value.requestState == "accepted")
                         navController.navigate(Screen.MessageScreen.route + "/$uid")
-                    else if (state.requestState.isBlank()){
+                    else if (state.value.requestState.isBlank()){
 
                         viewModel.sendRequest(uid) // State changed
 
-                        state = updateState(viewModel)
-
-                        if(state.error == null)
+                        if(state.value.error == null)
                             actionButtonImage.value = R.drawable.ic_user_wait
                     }
                 }) {
                 when {
-                    state.requestState == "accepted" -> {
+                    state.value.requestState == "accepted" -> {
                         actionButtonImage.value = R.drawable.ic_message
                         Icon(
                             painter = painterResource(actionButtonImage.value),
                             contentDescription = "Message"
                         )
                     }
-                    state.requestState.isBlank() -> {
+                    state.value.requestState.isBlank() -> {
                         actionButtonImage.value = R.drawable.ic_add_user
                         Icon(
                             painter = painterResource(actionButtonImage.value),
