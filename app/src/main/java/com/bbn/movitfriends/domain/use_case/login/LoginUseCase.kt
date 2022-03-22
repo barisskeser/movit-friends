@@ -20,6 +20,7 @@ class LoginUseCase @Inject constructor(
             firebaseAuthService.loginWithEmailAndPassword(email, password)
             emit(Result.Success())
         }catch (e: Exception){
+            println(e)
             emit(Result.Error(e.localizedMessage ?: "An unexpected error occured"))
         }
     }

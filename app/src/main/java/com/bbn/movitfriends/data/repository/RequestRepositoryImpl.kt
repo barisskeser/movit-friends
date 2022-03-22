@@ -23,6 +23,8 @@ class RequestRepositoryImpl @Inject constructor(
     private var _requestList: MutableLiveData<ArrayList<User>> = MutableLiveData<ArrayList<User>>()
     private val uid = loginUser?.uid
 
+    private var exception: Exception? = null
+
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getRequests(): MutableLiveData<ArrayList<User>> {
 
@@ -57,8 +59,12 @@ class RequestRepositoryImpl @Inject constructor(
         map.put("status", "sent")
         map.put("time", FieldValue.serverTimestamp())
 
-        firestore.collection(Constants.REQUEST_COLLECTION).add(map).addOnFailureListener { exception ->
-            throw exception
+        firestore.collection(Constants.REQUEST_COLLECTION).add(map).addOnFailureListener {
+            exception = it
+        }
+
+        exception?.let {
+
         }
     }
 

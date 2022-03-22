@@ -1,10 +1,10 @@
 package com.bbn.movitfriends.presentation.chat
 
 import android.accounts.NetworkErrorException
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.bbn.movitfriends.common.NetworkHelper
 import com.bbn.movitfriends.common.Resource
 import com.bbn.movitfriends.domain.use_case.chat.GetChatsUseCase

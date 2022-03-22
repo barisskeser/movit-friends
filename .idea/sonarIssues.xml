@@ -43,12 +43,27 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../KotlinUlkeler/app/src/main/java/com/example/kotlinulkeler/view/FeedFragment.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../KotlinUlkeler/app/src/main/java/com/example/kotlinulkeler/viewmodel/FeedViewModel.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/build.gradle">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/build/generated/source/buildConfig/debug/com/bbn/movitfriends/BuildConfig.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/build/generated/source/kapt/debug/com/bbn/movitfriends/MovitApp_HiltComponents.java">
           <value>
             <set />
           </value>
@@ -639,6 +654,46 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/ProfileViewModel.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/component/AboutSectionProfileScreen.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/component/ImageSectionProfileScreen.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/component/NameSectionProfileScreen.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/component/ProfileScreenAboutSection.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/component/ProfileScreenImageSection.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/component/ProfileScreenNameSection.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/component/ProfileScreenTopBar.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/presentation/profile/component/TopBarProfileScreen.kt">
           <value>
             <set />
           </value>

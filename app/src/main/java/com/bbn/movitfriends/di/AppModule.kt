@@ -51,8 +51,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserRepository(firestore: FirebaseFirestore, dataStoreManager: FilterDataStoreManager): UserRepository{
-        return UserRepositoryImpl(firestore, dataStoreManager)
+    fun provideUserRepository(firestore: FirebaseFirestore, loginUser: FirebaseUser?, dataStoreManager: FilterDataStoreManager): UserRepository{
+        return UserRepositoryImpl(firestore, loginUser, dataStoreManager)
     }
 
     @Provides

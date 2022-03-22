@@ -13,10 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.bbn.movitfriends.common.Constants
+import com.bbn.movitfriends.presentation.chat.ChatScreen
 import com.bbn.movitfriends.presentation.chat.component.ChatItem
 import com.bbn.movitfriends.presentation.login.LoginScreen
 import com.bbn.movitfriends.presentation.map.MapScreen
@@ -32,8 +34,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,13 +44,6 @@ class MainActivity: ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Column {
-                        ChatItem()
-                        ChatItem()
-                        ChatItem()
-                    }
-
-                DefaultPreview()
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
@@ -70,6 +63,11 @@ class MainActivity: ComponentActivity() {
                             route = Screen.ProfileScreen.route + "/{${Constants.PARAM_USER_ID}}"
                         ){
                             ProfileScreen(navController = navController)
+                        }
+                        composable(
+                            route = Screen.ChatScreen.route
+                        ){
+                            ChatScreen(navController = navController)
                         }
                     }
                 }

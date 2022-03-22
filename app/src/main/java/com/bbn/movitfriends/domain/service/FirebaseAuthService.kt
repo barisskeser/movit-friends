@@ -1,6 +1,8 @@
 package com.bbn.movitfriends.domain.service
 
+import com.bbn.movitfriends.common.Result
 import com.bbn.movitfriends.domain.model.User
+import kotlinx.coroutines.flow.Flow
 
 interface FirebaseAuthService {
 

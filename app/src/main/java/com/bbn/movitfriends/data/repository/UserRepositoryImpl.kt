@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val currentUser: FirebaseUser,
+    private val currentUser: FirebaseUser?,
     private val dataStore: FilterDataStoreManager
 ) : UserRepository {
 
@@ -95,7 +95,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun isMe(uid: String): Boolean {
-        return currentUser.uid == uid
+        return currentUser?.uid == uid
     }
 
     private fun QueryDocumentSnapshot.toUser(): User {
