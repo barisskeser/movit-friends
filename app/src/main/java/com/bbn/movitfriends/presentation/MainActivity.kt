@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.bbn.movitfriends.common.Constants
 import com.bbn.movitfriends.presentation.chat.component.ChatItem
 import com.bbn.movitfriends.presentation.login.LoginScreen
 import com.bbn.movitfriends.presentation.map.MapScreen
@@ -49,7 +50,7 @@ class MainActivity: ComponentActivity() {
                         ChatItem()
                     }
 
-                /*DefaultPreview()
+                DefaultPreview()
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
@@ -65,7 +66,12 @@ class MainActivity: ComponentActivity() {
                         ){
                             RegisterScreen(navController)
                         }
-                    }*/
+                        composable(
+                            route = Screen.ProfileScreen.route + "/{${Constants.PARAM_USER_ID}}"
+                        ){
+                            ProfileScreen(navController = navController)
+                        }
+                    }
                 }
             }
         }

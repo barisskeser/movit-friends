@@ -97,8 +97,6 @@ Fapp/src/main/java/com/bbn/movitfriends/presentation/chat/ChatScreen.kt,8\5\853
 Napp/src/main/java/com/bbn/movitfriends/presentation/register/RegisterScreen.kt,f\a\fab1c8ec68326d1801b10675e04673868e98e939
 u
 Eapp/src/main/java/com/bbn/movitfriends/presentation/ui/theme/Color.kt,4\8\4879d5063eab5b42be7815847758cbecbc205a85
-s
-Capp/src/main/java/com/bbn/movitfriends/presentation/MainActivity.kt,e\5\e50e5634e4813d98e0d4d7698cd767dd64e3d246
 ~
 Napp/src/main/java/com/bbn/movitfriends/presentation/chat/component/ChatItem.kt,b\8\b86f1a54a052c8225038e119d2ff3a4f6167335a
 k
@@ -115,8 +113,6 @@ m
 =app/src/main/java/com/bbn/movitfriends/presentation/Screen.kt,d\6\d606efd74c59e13c114179e53fba163e154a9cd5
 „
 Tapp/src/main/java/com/bbn/movitfriends/presentation/message/component/MessageItem.kt,4\d\4d1d2ff79131a8a2140440e2b86f78acf3358da7
-Œ
-\app/src/main/java/com/bbn/movitfriends/presentation/message/component/MessageScreenTopBar.kt,7\5\75309fde2334aab1b12e4129176024e50de13c9a
 |
 Lapp/src/main/java/com/bbn/movitfriends/data/repository/UserRepositoryImpl.kt,c\0\c0962cbf83527035ee7543271ecdbc86a7c80ae8
 |
