@@ -4,17 +4,25 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -73,7 +81,9 @@ fun InputSection(
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val error = remember { mutableStateOf("") }
+    val showPassword = remember { mutableStateOf(false) }
 
+    // E-mail Text Field
     OutlinedTextField(
         value = email.value, onValueChange = {
             email.value = it
@@ -82,9 +92,17 @@ fun InputSection(
             .fillMaxWidth(0.8f),
         placeholder = {
             Text(text = "E-Mail")
-        }
+        },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            autoCorrect = true,
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
+        ),
+        singleLine = true
     )
     Spacer(modifier = Modifier.height(5.dp))
+
+    // Password Text Field
     OutlinedTextField(
         value = password.value, onValueChange = {
             password.value = it
@@ -93,7 +111,23 @@ fun InputSection(
             .fillMaxWidth(0.8f),
         placeholder = {
             Text(text = "Password")
-        }
+        },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            autoCorrect = true,
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                login(
+                    email = email.value,
+                    password = password.value,
+                    viewModel = viewModel,
+                    error = error
+                )
+            }
+        ),
+        visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation()
     )
     Text(
         text = error.value,
@@ -108,9 +142,12 @@ fun InputSection(
             .fillMaxWidth(0.7f)
             .height(45.dp),
         onClick = {
-            viewModel.loginWithEmailAndPassword(email = email.value, password = password.value)
-            if (viewModel.state.value.error != null)
-                error.value = "*" + viewModel.state.value.error!!
+            login(
+                email = email.value,
+                password = password.value,
+                viewModel = viewModel,
+                error = error
+            )
         },
     ) {
         Text(text = "LOGIN")
@@ -125,4 +162,15 @@ fun InputSection(
             navController.navigate(Screen.RegisterScreen.route)
         }
     )
+}
+
+private fun login(
+    email: String,
+    password: String,
+    viewModel: LoginViewModel,
+    error: MutableState<String>
+){
+    viewModel.loginWithEmailAndPassword(email = email, password = password)
+    if (viewModel.state.value.error != null)
+        error.value = "*" + viewModel.state.value.error!!
 }
