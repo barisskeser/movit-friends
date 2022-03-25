@@ -3,6 +3,7 @@ package com.bbn.movitfriends.data.repository
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.bbn.movitfriends.common.Constants
+import com.bbn.movitfriends.domain.interfaces.UserCallBack
 import com.bbn.movitfriends.domain.model.Chat
 import com.bbn.movitfriends.domain.repository.ChatRepository
 import com.bbn.movitfriends.domain.repository.MessageRepository
@@ -33,14 +34,14 @@ class ChatRepositoryImpl @Inject constructor(
             val chats = ArrayList<Chat>()
             snapshot?.forEach { chat ->
                 if(chat.getString("from").equals(loginUser?.uid) || chat.getString("to").equals(loginUser?.uid)){
-                    val otherUser = if(chat.getString("from").equals(loginUser?.uid))
+                    val otherUserId = if(chat.getString("from").equals(loginUser?.uid))
                         chat.getString("to")
                     else
                         chat.getString("from")
                     callbackFlow<UserRepository> {
                         val chat = Chat(
-                            user = otherUser?.let { userRepository.getUserById(it) },
-                            lastMessage = otherUser?.let { messageRepository.getLastMessageWithUser(it) }
+                            userUid = otherUserId!!,
+                            lastMessage = otherUserId.let { messageRepository.getLastMessageWithUser(it) }
                         )
                         chats.add(chat)
                     }

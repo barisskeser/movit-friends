@@ -8,6 +8,7 @@ import androidx.lifecycle.*
 import com.bbn.movitfriends.common.NetworkHelper
 import com.bbn.movitfriends.common.Resource
 import com.bbn.movitfriends.domain.use_case.chat.GetChatsUseCase
+import com.bbn.movitfriends.presentation.MainActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -43,5 +44,9 @@ class ChatViewModel @Inject constructor(
                 }
             }
         }.launchIn(viewModelScope)
+    }
+
+    private fun observerLiveData(){
+
     }
 }

@@ -7,16 +7,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -29,14 +23,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bbn.movitfriends.R
 import com.bbn.movitfriends.presentation.Screen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    scaffoldState: ScaffoldState = rememberScaffoldState()
 ) {
     val state = viewModel.state.value
-
 
     Column(
         Modifier.fillMaxSize(),
@@ -54,11 +51,22 @@ fun LoginScreen(
     state.error?.let {
         if (it.isNotBlank()) {
             Log.d("LoginActivity", "LoginScreen: ${state.error}")
+            LaunchedEffect(scaffoldState.snackbarHostState){
+                scaffoldState.snackbarHostState.showSnackbar(
+                    message = it,
+                    actionLabel = "Retry message"
+                )
+            }
         }
     }
 
     if (state.isLoggedIn) {
-        navController.navigate(Screen.ChatScreen.route)
+        state.uid?.let {
+            Log.d("LoginScreen", "LoginScreen: route")
+            LaunchedEffect(scaffoldState){
+                navController.navigate(Screen.ProfileScreen.route + "/$it")
+            }
+        }
     }
 }
 
@@ -66,7 +74,7 @@ fun LoginScreen(
 private fun ImageSection() {
     Image(
         painter = painterResource(id = R.drawable.sign_in_illustrator),
-        contentDescription = "",
+        contentDescription = "LoginIllustration",
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.45f)
@@ -74,7 +82,7 @@ private fun ImageSection() {
 }
 
 @Composable
-fun InputSection(
+private fun InputSection(
     navController: NavController,
     viewModel: LoginViewModel
 ) {

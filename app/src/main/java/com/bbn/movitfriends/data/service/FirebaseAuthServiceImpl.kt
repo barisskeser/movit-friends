@@ -1,7 +1,7 @@
 package com.bbn.movitfriends.data.service
 
+import android.util.Log
 import com.bbn.movitfriends.domain.model.User
-import com.bbn.movitfriends.domain.model.setId
 import com.bbn.movitfriends.domain.repository.UserRepository
 import com.bbn.movitfriends.domain.service.FirebaseAuthService
 import com.google.firebase.auth.FirebaseAuth
@@ -20,7 +20,6 @@ class FirebaseAuthServiceImpl @Inject constructor(
         return firebaseAuth.currentUser != null
     }
 
-
     override suspend fun loginWithEmailAndPassword(email: String, password: String){
         val task = firebaseAuth.signInWithEmailAndPassword(email, password)
 
@@ -30,17 +29,27 @@ class FirebaseAuthServiceImpl @Inject constructor(
 
     }
 
-    override suspend fun createUserWithEmailAndPassword(email: String, password: String, user: User) {
-        val task = firebaseAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
-            it.user?.let { authUser -> user.setId(authUser.uid) }
-            CoroutineScope(Dispatchers.IO).launch{
-                userRepository.signInUser(user)
+    override suspend fun createUserWithEmailAndPassword(email: String, password: String, fullName: String, username: String, gender: String) {
+        val task = firebaseAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener { result ->
+            result?.user?.let { createdUser ->
+                val userID = createdUser.uid
+                CoroutineScope(Dispatchers.IO).launch {
+                    val user = User(
+                        id = userID,
+                        fullName = fullName,
+                        username = username,
+                        email = email,
+                        gender = gender,
+                        birthDate = null
+                    )
+                    userRepository.createUser(user)
+                }
             }
         }
 
-        if(!task.isSuccessful){
-            throw Exception("Something went wrong!")
-        }
-
+        if(!task.isSuccessful)
+            task.exception?.let {
+                throw it
+            }
     }
 }

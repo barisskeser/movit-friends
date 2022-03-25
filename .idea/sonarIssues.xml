@@ -28,6 +28,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../CleanArcCryptoApp/app/src/main/java/com/baris/cleanarccryptoapp/presentation/coin_list/CoinListScreen.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../CleanArcCryptoApp/app/src/main/java/com/baris/cleanarccryptoapp/presentation/coin_list/CoinListViewModel.kt">
           <value>
             <set />
@@ -254,6 +259,16 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/di/AppModule.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/domain/interfaces/ChatCallBack.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/domain/interfaces/UserCallBack.kt">
           <value>
             <set />
           </value>
@@ -499,6 +514,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/domain/use_case/profile/UpdateProfileUseCase.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/bbn/movitfriends/domain/use_case/register/CreateUserUseCase.kt">
           <value>
             <set />
           </value>

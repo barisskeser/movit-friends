@@ -7,6 +7,7 @@ import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.repository.RequestRepository
 import com.bbn.movitfriends.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -72,8 +73,7 @@ class RequestRepositoryImpl @Inject constructor(
 
         val result = firestore.collection(Constants.REQUEST_COLLECTION)
             .whereEqualTo("status", "accepted")
-            .whereArrayContains("from", listOf(uid, loginUser?.uid))
-            .whereArrayContains("to", listOf(uid, loginUser?.uid))
+            .whereArrayContains(FieldPath.of("from", "to"), listOf(uid, loginUser?.uid))
             .get()
             .result?.first()
 
@@ -81,6 +81,6 @@ class RequestRepositoryImpl @Inject constructor(
     }
 
     private suspend fun requestToUser(uid: String): User?{
-        return userRepository.getUserById(uid)
+        return null
     }
 }

@@ -1,60 +1,60 @@
 package com.bbn.movitfriends.data.repository
 
 import com.bbn.movitfriends.common.Constants
+import com.bbn.movitfriends.domain.interfaces.UserCallBack
 import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.model.toHashMap
 import com.bbn.movitfriends.domain.repository.FilterDataStoreManager
 import com.bbn.movitfriends.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
+import com.google.firebase.storage.StorageReference
 import com.google.type.DateTime
+import java.lang.Exception
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
+    private val storageReference: StorageReference,
     private val currentUser: FirebaseUser?,
     private val dataStore: FilterDataStoreManager
 ) : UserRepository {
 
-    private var user: DocumentSnapshot? = null
     private lateinit var userList: List<User>
 
-    override suspend fun getUserById(uid: String): User {
-        firestore.collection(Constants.USER_COLLECTION).document(uid).get().addOnSuccessListener {
-            user = it
-        }.addOnFailureListener { exception ->
-            throw exception
+    override suspend fun getUserById(uid: String, userCallBack: UserCallBack) {
+        firestore.collection(Constants.USER_COLLECTION).document(uid).get().addOnSuccessListener { user->
+            val response = User(
+                username = user?.getString("username")!!,
+                fullName = user.getString("fullName")!!,
+                gender = user.getString("gender")!!,
+                email = user.getString("email")!!,
+                about = user.getString("about")!!,
+                isAdBlocked = user.getBoolean("isAdBlocked")!!,
+                isPremium = user.getBoolean("isPremium")!!,
+                imageUrl = user.getString("imageUrl")!!,
+                id = user.getString("id")!!,
+                birthDate = null,
+                createDate = user.getString("createDate")!!
+            )
+            userCallBack.onCallBack(response)
+        }.addOnFailureListener {
+            userCallBack.onFailure(it)
         }
-        return User(
-            username = user?.getString("username")!!,
-            fullName = user?.getString("fullName")!!,
-            gender = user?.getString("gender")!!,
-            email = user?.getString("email")!!,
-            lat = user?.getDouble("lat"),
-            lng = user?.getDouble("lng"),
-            isAdBlocked = user?.getBoolean("isAdBlocked")!!,
-            isPremium = user?.getBoolean("isPremium")!!,
-            imageUrl = user?.getString("imageUrl")!!,
-            status = user?.getString("status")!!,
-            id = user?.getString("id")!!,
-            credit = user?.get("credit") as Int,
-            birthDate = user?.get("birthDate") as DateTime?,
-            createDate = user?.getString("createDate")!!
-        )
     }
 
     override suspend fun updateUserById(user: User) {
-        firestore.collection(Constants.USER_COLLECTION).document(user.id).update(user.toHashMap())
-            .addOnFailureListener { exception ->
-                throw exception
-            }
+        val task = firestore.collection(Constants.USER_COLLECTION).document(user.id)
+            .update(user.toHashMap())
+
+        if (!task.isSuccessful)
+            throw Exception("Something went wrong while updating! Try again.")
     }
 
-    override suspend fun signInUser(user: User) {
-        firestore.collection(Constants.USER_COLLECTION).add(user.toHashMap())
-            .addOnFailureListener { exception ->
-                throw exception
-            }
+    override suspend fun createUser(user: User) {
+        val createTask = firestore.collection(Constants.USER_COLLECTION).document(user.id).set(user.toHashMap()).addOnFailureListener {
+            throw it
+        }
     }
 
     override suspend fun getUsersWithFilter(): List<User> {
@@ -112,7 +112,7 @@ class UserRepositoryImpl @Inject constructor(
             status = this.getString("status")!!,
             id = this.getString("id")!!,
             credit = this.get("credit") as Int,
-            birthDate = this.get("birthDate") as DateTime?,
+            age = this.get("age") as Int,
             createDate = this.getString("createDate")!!
         )
     }

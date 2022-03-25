@@ -8,6 +8,7 @@ import com.bbn.movitfriends.domain.model.toHashMap
 import com.bbn.movitfriends.domain.repository.FriendRepository
 import com.bbn.movitfriends.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.callbackFlow
@@ -60,14 +61,13 @@ class FriendRepositoryImpl @Inject constructor(
     override suspend fun isMyFriend(uid: String): Boolean {
         return firestore.collection(Constants.REQUEST_COLLECTION)
             .whereEqualTo("status", "accepted")
-            .whereArrayContains("from", listOf(uid, loginUser?.uid))
-            .whereArrayContains("to", listOf(uid, loginUser?.uid))
+            .whereArrayContains(FieldPath.of("from", "to"), listOf(uid, loginUser?.uid))
             .get()
             .result
             ?.size() != 0
     }
 
     private suspend fun friendToUser(uid: String): User?{
-        return userRepository.getUserById(uid)
+        return null
     }
 }

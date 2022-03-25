@@ -8,7 +8,11 @@ import com.bbn.movitfriends.domain.repository.*
 import com.bbn.movitfriends.domain.service.FirebaseAuthService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +37,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideFirebaseDatabase(): StorageReference {
+        return FirebaseStorage.getInstance().getReference("images")
+    }
+
+    @Provides
+    @Singleton
     fun provideFirebaseAuth(): FirebaseAuth {
         return FirebaseAuth.getInstance()
     }
@@ -51,8 +61,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserRepository(firestore: FirebaseFirestore, loginUser: FirebaseUser?, dataStoreManager: FilterDataStoreManager): UserRepository{
-        return UserRepositoryImpl(firestore, loginUser, dataStoreManager)
+    fun provideUserRepository(firestore: FirebaseFirestore, storageReference: StorageReference, loginUser: FirebaseUser?, dataStoreManager: FilterDataStoreManager): UserRepository{
+        return UserRepositoryImpl(firestore, storageReference, loginUser, dataStoreManager)
     }
 
     @Provides

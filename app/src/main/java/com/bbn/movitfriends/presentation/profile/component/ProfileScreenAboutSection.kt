@@ -21,7 +21,6 @@ fun ProfileScreenAboutSection(
         .verticalScroll(scrollState, true)) {
         Text(
             text = about,
-            fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .padding(horizontal = 15.dp)
         )

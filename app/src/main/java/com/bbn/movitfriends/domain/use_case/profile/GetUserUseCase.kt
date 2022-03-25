@@ -1,6 +1,9 @@
 package com.bbn.movitfriends.domain.use_case.profile
 
+import androidx.compose.runtime.MutableState
 import com.bbn.movitfriends.common.Resource
+import com.bbn.movitfriends.common.Result
+import com.bbn.movitfriends.domain.interfaces.UserCallBack
 import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseUser
@@ -12,14 +15,15 @@ import javax.inject.Inject
 class GetUserUseCase @Inject constructor(
     private val repository: UserRepository
 ){
+    private lateinit var mutableUser: MutableState<User>
+    private lateinit var mutableError: MutableState<Exception>
 
-    operator fun invoke(uid: String): Flow<Resource<User>> = flow {
+    operator fun invoke(uid: String, userCallBack: UserCallBack): Flow<Result> = flow {
         try {
-            emit(Resource.Loading<User>())
-            val user = repository.getUserById(uid)
-            user?.let { emit(Resource.Success<User>(user)) }
+            repository.getUserById(uid, userCallBack)
+            emit(Result.Success())
         } catch (e: Exception){
-            emit(Resource.Error<User>(e.localizedMessage ?: "An unexpected error occured"))
+            emit(Result.Error(e.localizedMessage ?: "An unexpected error occured"))
         }
     }
 

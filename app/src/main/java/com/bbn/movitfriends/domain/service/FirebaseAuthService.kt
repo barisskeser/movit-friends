@@ -10,5 +10,6 @@ interface FirebaseAuthService {
 
     suspend fun loginWithEmailAndPassword(email: String, password: String)
 
-    suspend fun createUserWithEmailAndPassword(email: String, password: String, user: User)
+    suspend fun createUserWithEmailAndPassword(email: String, password: String, fullName: String, username: String, gender: String)
+
 }

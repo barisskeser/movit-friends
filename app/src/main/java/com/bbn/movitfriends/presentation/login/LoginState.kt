@@ -6,5 +6,6 @@ import java.util.ArrayList
 
 data class LoginState(
     val isLoggedIn: Boolean = false,
+    val uid: String? = null,
     val error: String? = null
 )

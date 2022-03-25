@@ -1,6 +1,7 @@
 package com.bbn.movitfriends.data.repository
 
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.lifecycle.MutableLiveData
 import com.bbn.movitfriends.common.Constants
 import com.bbn.movitfriends.domain.model.Message
@@ -38,7 +39,7 @@ class MessageRepositoryImpl @Inject constructor(
                 val messageList = ArrayList<Message>()
                 snapshot?.forEach { message ->
                     callbackFlow<UserRepository> {
-                        val userMessage = Message(
+                        /*val userMessage = Message(
                             id = message.id,
                             from = message.getString("from")?.let { userRepository.getUserById(it) },
                             to = message.getString("to")?.let { userRepository.getUserById(it) },
@@ -47,7 +48,7 @@ class MessageRepositoryImpl @Inject constructor(
                             isSeen = message.getBoolean("isSeen")
                         )
 
-                        messageList.add(userMessage)
+                        messageList.add(userMessage)*/
                     }
                 }
 
@@ -71,18 +72,21 @@ class MessageRepositoryImpl @Inject constructor(
                 }
 
                 val lastMessage = snapshot?.last()
-                var message: Message? =  null
+
                 callbackFlow<UserRepository> {
-                    message = Message(
-                        id = lastMessage?.id,
-                        from = lastMessage?.getString("from")?.let { userRepository.getUserById(it) },
-                        to = lastMessage?.getString("to")?.let { userRepository.getUserById(it) },
-                        text = lastMessage?.getString("message"),
-                        time = lastMessage?.getTimestamp("time"),
-                        isSeen = lastMessage?.getBoolean("isSeen")
-                    )
+                    lastMessage?.let {
+                        val message = Message(
+                            id = it.id,
+                            from = it.getString("from")!!,
+                            to = it.getString("to")!!,
+                            text = it.getString("message")!!,
+                            time = it.getTimestamp("time")!!,
+                            isSeen = it.getBoolean("isSeen")!!
+                        )
+                        _message.value = message
+                    }
                 }
-                _message.value = message
+
             }
 
         return _message
