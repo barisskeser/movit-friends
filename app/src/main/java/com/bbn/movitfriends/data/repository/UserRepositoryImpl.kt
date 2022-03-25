@@ -1,6 +1,8 @@
 package com.bbn.movitfriends.data.repository
 
+import android.util.Log
 import com.bbn.movitfriends.common.Constants
+import com.bbn.movitfriends.domain.interfaces.RegisterCallBack
 import com.bbn.movitfriends.domain.interfaces.UserCallBack
 import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.model.toHashMap
@@ -20,27 +22,30 @@ class UserRepositoryImpl @Inject constructor(
     private val dataStore: FilterDataStoreManager
 ) : UserRepository {
 
+    private val TAG = "UserRepositoryImpl"
     private lateinit var userList: List<User>
 
     override suspend fun getUserById(uid: String, userCallBack: UserCallBack) {
-        firestore.collection(Constants.USER_COLLECTION).document(uid).get().addOnSuccessListener { user->
-            val response = User(
-                username = user?.getString("username")!!,
-                fullName = user.getString("fullName")!!,
-                gender = user.getString("gender")!!,
-                email = user.getString("email")!!,
-                about = user.getString("about")!!,
-                isAdBlocked = user.getBoolean("isAdBlocked")!!,
-                isPremium = user.getBoolean("isPremium")!!,
-                imageUrl = user.getString("imageUrl")!!,
-                id = user.getString("id")!!,
-                birthDate = null,
-                createDate = user.getString("createDate")!!
-            )
-            userCallBack.onCallBack(response)
-        }.addOnFailureListener {
-            userCallBack.onFailure(it)
-        }
+        firestore.collection(Constants.USER_COLLECTION).document(uid).get()
+            .addOnSuccessListener { user ->
+                user.let {
+                    val response = User(
+                        username = it.getString("username")!!,
+                        fullName = it.getString("fullName")!!,
+                        gender = it.getString("gender")!!,
+                        email = it.getString("email")!!,
+                        about = it.getString("about")!!,
+                        isAdBlocked = it.getBoolean("isAdBlocked")!!,
+                        isPremium = it.getBoolean("isPremium")!!,
+                        imageUrl = it.getString("imageUrl")!!,
+                        id = it.getString("id")!!,
+                        createDate = it.getString("createDate")!!
+                    )
+                    userCallBack.onCallBack(response)
+                }
+            }.addOnFailureListener {
+                userCallBack.onFailure(it)
+            }
     }
 
     override suspend fun updateUserById(user: User) {
@@ -51,10 +56,16 @@ class UserRepositoryImpl @Inject constructor(
             throw Exception("Something went wrong while updating! Try again.")
     }
 
-    override suspend fun createUser(user: User) {
-        val createTask = firestore.collection(Constants.USER_COLLECTION).document(user.id).set(user.toHashMap()).addOnFailureListener {
-            throw it
-        }
+    override suspend fun createUser(registerCallBack: RegisterCallBack, user: User) {
+        firestore.collection(Constants.USER_COLLECTION).document(user.id)
+            .set(user.toHashMap())
+            .addOnSuccessListener {
+                Log.d(TAG, "User created on firestore")
+                registerCallBack.onCreateUserCallBack(user.id)
+            }
+            .addOnFailureListener {
+                registerCallBack.onFailure(it.localizedMessage ?: "An unexpected error occured!")
+            }
     }
 
     override suspend fun getUsersWithFilter(): List<User> {

@@ -1,6 +1,5 @@
 package com.bbn.movitfriends.presentation.login
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,52 +21,58 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bbn.movitfriends.R
+import com.bbn.movitfriends.common.UiEvent
 import com.bbn.movitfriends.presentation.Screen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel = hiltViewModel(),
-    scaffoldState: ScaffoldState = rememberScaffoldState()
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
 
-    Column(
-        Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        ImageSection()
-        Spacer(modifier = Modifier.height(20.dp))
-        InputSection(
-            navController = navController,
-            viewModel = viewModel
-        )
-    }
+    val error = remember { mutableStateOf("") }
+    val loading = remember { mutableStateOf(false) }
 
-    state.error?.let {
-        if (it.isNotBlank()) {
-            Log.d("LoginActivity", "LoginScreen: ${state.error}")
-            LaunchedEffect(scaffoldState.snackbarHostState){
-                scaffoldState.snackbarHostState.showSnackbar(
-                    message = it,
-                    actionLabel = "Retry message"
-                )
+    Box(modifier = Modifier.fillMaxSize()){
+        Column(
+            Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            ImageSection()
+            Spacer(modifier = Modifier.height(20.dp))
+            InputSection(
+                navController = navController,
+                viewModel = viewModel,
+                error = error
+            )
+        }
+
+        LaunchedEffect(key1 = true){
+            viewModel.uiEvent.collect { event ->
+                when(event){
+                    is UiEvent.Navigate -> {
+                        loading.value = false
+                        navController.navigate(event.route)
+                    }
+
+                    is UiEvent.ShowError -> {
+                        loading.value = false
+                        error.value = event.errorMessage
+                    }
+
+                    is UiEvent.ShowLoading -> {
+                        loading.value = true
+                    }
+                }
             }
         }
+
+        if (loading.value)
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
     }
 
-    if (state.isLoggedIn) {
-        state.uid?.let {
-            Log.d("LoginScreen", "LoginScreen: route")
-            LaunchedEffect(scaffoldState){
-                navController.navigate(Screen.ProfileScreen.route + "/$it")
-            }
-        }
-    }
 }
 
 @Composable
@@ -84,11 +89,11 @@ private fun ImageSection() {
 @Composable
 private fun InputSection(
     navController: NavController,
-    viewModel: LoginViewModel
+    viewModel: LoginViewModel,
+    error: MutableState<String>
 ) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val error = remember { mutableStateOf("") }
     val showPassword = remember { mutableStateOf(false) }
 
     // E-mail Text Field
@@ -127,12 +132,7 @@ private fun InputSection(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                login(
-                    email = email.value,
-                    password = password.value,
-                    viewModel = viewModel,
-                    error = error
-                )
+                viewModel.onEvent(LoginEvent.OnLogin(email.value, password.value))
             }
         ),
         visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation()
@@ -150,12 +150,7 @@ private fun InputSection(
             .fillMaxWidth(0.7f)
             .height(45.dp),
         onClick = {
-            login(
-                email = email.value,
-                password = password.value,
-                viewModel = viewModel,
-                error = error
-            )
+            viewModel.onEvent(LoginEvent.OnLogin(email.value, password.value))
         },
     ) {
         Text(text = "LOGIN")
@@ -170,15 +165,4 @@ private fun InputSection(
             navController.navigate(Screen.RegisterScreen.route)
         }
     )
-}
-
-private fun login(
-    email: String,
-    password: String,
-    viewModel: LoginViewModel,
-    error: MutableState<String>
-){
-    viewModel.loginWithEmailAndPassword(email = email, password = password)
-    if (viewModel.state.value.error != null)
-        error.value = "*" + viewModel.state.value.error!!
 }

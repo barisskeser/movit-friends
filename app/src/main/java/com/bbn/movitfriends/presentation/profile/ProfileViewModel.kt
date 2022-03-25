@@ -54,6 +54,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun getUser(userUid: String) {
+        Log.d("ProfileViewModel", "getUser: $userUid")
         getUserUseCase(userUid, object : UserCallBack {
             override fun onCallBack(user: User) {
                 CoroutineScope(Dispatchers.IO).launch {

@@ -9,12 +9,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -29,27 +27,60 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bbn.movitfriends.R
+import com.bbn.movitfriends.common.UiEvent
 import com.bbn.movitfriends.domain.model.User
-import com.bbn.movitfriends.presentation.Screen
 
 @Composable
 fun RegisterScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: RegisterViewModel = hiltViewModel()
 ) {
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(state = rememberScrollState()),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ImageSection()
-        Spacer(modifier = Modifier.height(15.dp))
-        InputSection(
-            navController = navController
-        )
+    val error = remember { mutableStateOf("") }
+    val loading = remember { mutableStateOf(false) }
+
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState()),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ImageSection()
+            Spacer(modifier = Modifier.height(15.dp))
+            InputSection(
+                navController = navController,
+                error = error,
+                viewModel = viewModel
+            )
+
+            LaunchedEffect(key1 = true) {
+                viewModel.uiEvent.collect { event ->
+                    when (event) {
+                        is UiEvent.Navigate -> {
+                            loading.value = false
+                            navController.navigate(event.route)
+                        }
+
+                        is UiEvent.ShowError -> {
+                            loading.value = false
+                            error.value = event.errorMessage
+                        }
+
+                        is UiEvent.ShowLoading -> {
+                            loading.value = true
+                        }
+                    }
+                }
+            }
+        }
+
+        if (loading.value)
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
     }
+
 }
 
 @Composable
@@ -66,7 +97,8 @@ private fun ImageSection() {
 @Composable
 private fun InputSection(
     navController: NavController,
-    viewModel: RegisterViewModel = hiltViewModel(),
+    error: MutableState<String>,
+    viewModel: RegisterViewModel
 ) {
     val fullName = remember { mutableStateOf("Barış Keser") }
     val username = remember { mutableStateOf("barisskeser") }
@@ -74,8 +106,6 @@ private fun InputSection(
     val gender = remember { mutableStateOf("Man") }
     val password = remember { mutableStateOf("baris123") }
     val confirmPassword = remember { mutableStateOf("baris123") }
-    val error = remember { mutableStateOf("") }
-    val state = viewModel.state
 
     // Error Text
     Text(
@@ -180,26 +210,15 @@ private fun InputSection(
                 )
             ) {
                 error.value = ""
-                val user = createUser(
-                    id = "",
-                    fullName = fullName.value,
-                    username = username.value,
-                    email = email.value,
-                    gender = gender.value,
+                viewModel.onEvent(
+                    RegisterEvent.OnRegister(
+                        fullName = fullName.value,
+                        username = username.value,
+                        email = email.value,
+                        password = password.value,
+                        gender = gender.value
+                    )
                 )
-                viewModel.createUserWithEmailAndPassword(
-                    fullName = fullName.value,
-                    username = username.value,
-                    email = email.value,
-                    password = password.value,
-                    gender = gender.value
-                )
-                if (state.value.error != null)
-                    error.value = "*${state.value.error}"
-                else {
-                    println(state.value.userUid)
-                    navController.navigate(Screen.ProfileScreen.route + "/${state.value.userUid}")
-                }
             } else
                 error.value = "*You must complete all fields"
         },
@@ -248,7 +267,6 @@ private fun CustomTextField(
     keyboardActions: KeyboardActions,
     visualTransformation: VisualTransformation
 ) {
-    // Password Text Field
     OutlinedTextField(
         value = text.value, onValueChange = {
             text.value = it

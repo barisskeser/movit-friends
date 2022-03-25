@@ -1,58 +1,84 @@
 package com.bbn.movitfriends.presentation.register
 
-import android.graphics.Bitmap
-import android.net.Uri
-import android.provider.MediaStore
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bbn.movitfriends.common.Result
+import com.bbn.movitfriends.common.UiEvent
+import com.bbn.movitfriends.domain.interfaces.RegisterCallBack
 import com.bbn.movitfriends.domain.model.User
-import com.bbn.movitfriends.domain.use_case.register.CreateUserUseCase
-import com.bbn.movitfriends.domain.use_case.register.RegisterUseCase
-import com.google.firebase.auth.FirebaseUser
+import com.bbn.movitfriends.domain.repository.UserRepository
+import com.bbn.movitfriends.domain.service.FirebaseAuthService
+import com.bbn.movitfriends.presentation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val registerUseCase: RegisterUseCase,
-    private val createUserUseCase: CreateUserUseCase,
-    private val currentUser: FirebaseUser?
-): ViewModel() {
+    private val firebaseAuthService: FirebaseAuthService,
+    private val userRepository: UserRepository
+) : ViewModel(), RegisterCallBack {
 
     private val _state = mutableStateOf(RegisterState())
     val state: State<RegisterState> = _state
 
-    fun createUserWithEmailAndPassword(email: String, password: String, fullName: String, username: String, gender: String){
-        registerUseCase(email, password, fullName, username, gender).onEach { result ->
-            when(result){
-                is Result.Success -> {
-                    _state.value = RegisterState(isDone = true, userUid = currentUser?.uid)
-                }
-                is Result.Error -> {
-                    _state.value = RegisterState(error = result.message)
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
-    fun createUserInRepo(user: User) {
-
-        createUserUseCase(user).onEach { result ->
-            when(result){
-                is Result.Success -> {
-                    _state.value = RegisterState(isDone = true, userUid = currentUser?.uid)
-                }
-                is Result.Error -> {
-                    _state.value = RegisterState(error = result.message)
-                }
+    fun onEvent(event: RegisterEvent) {
+        when (event) {
+            is RegisterEvent.OnRegister -> {
+                createUserWithEmailAndPassword(
+                    email = event.email,
+                    password = event.password,
+                    fullName = event.fullName,
+                    username = event.username,
+                    gender = event.gender
+                )
             }
         }
+    }
+
+    private fun createUserWithEmailAndPassword(
+        email: String,
+        password: String,
+        fullName: String,
+        username: String,
+        gender: String
+    ) = viewModelScope.launch {
+
+        sendUiEvent(UiEvent.ShowLoading)
+
+        firebaseAuthService.createUserWithEmailAndPassword(
+            this@RegisterViewModel,
+            email = email,
+            password = password,
+            fullName = fullName,
+            username = username,
+            gender = gender
+        )
+    }
+
+    private fun createUserInRepo(user: User) = viewModelScope.launch {
+        userRepository.createUser(this@RegisterViewModel, user)
+    }
+
+    private fun sendUiEvent(event: UiEvent) = viewModelScope.launch {
+        _uiEvent.send(event)
+    }
+
+    override fun onRegisterCallBack(user: User) {
+        createUserInRepo(user)
+    }
+
+    override fun onCreateUserCallBack(userUid: String) {
+        sendUiEvent(UiEvent.Navigate(Screen.ProfileScreen.route + "/$userUid"))
+    }
+
+    override fun onFailure(error: String) {
+        sendUiEvent(UiEvent.ShowError(error))
     }
 }
