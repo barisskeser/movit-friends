@@ -8,7 +8,9 @@ import com.bbn.movitfriends.domain.repository.*
 import com.bbn.movitfriends.domain.service.FirebaseAuthService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -37,7 +39,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseDatabase(): StorageReference {
+    fun provideFirebaseDatabaseReference(): DatabaseReference {
+        return Firebase.database.reference
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseStorage(): StorageReference {
         return FirebaseStorage.getInstance().getReference("images")
     }
 
@@ -49,8 +57,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseAuthServise(firebaseAuth: FirebaseAuth, userRepository: UserRepository): FirebaseAuthService {
-        return FirebaseAuthServiceImpl(firebaseAuth, userRepository)
+    fun provideFirebaseAuthService(firebaseAuth: FirebaseAuth): FirebaseAuthService {
+        return FirebaseAuthServiceImpl(firebaseAuth)
     }
 
     @Provides
@@ -67,8 +75,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMessageRepository(firestore: FirebaseFirestore, loginUser: FirebaseUser?, userRepository: UserRepository): MessageRepository{
-        return MessageRepositoryImpl(firestore, loginUser, userRepository)
+    fun provideMessageRepository(database: DatabaseReference): MessageRepository{
+        return MessageRepositoryImpl(database)
     }
 
     @Provides
@@ -85,8 +93,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideChatRepository(firestore: FirebaseFirestore, loginUser: FirebaseUser?, userRepository: UserRepository, messageRepository: MessageRepository): ChatRepository{
-        return ChatRepositoryImpl(firestore, userRepository, messageRepository, loginUser)
+    fun provideChatRepository(database: DatabaseReference, loginUser: FirebaseUser?, userRepository: UserRepository, context: Context): ChatRepository{
+        return ChatRepositoryImpl(database, userRepository, loginUser, context)
     }
 
     @Provides

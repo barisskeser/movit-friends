@@ -7,120 +7,148 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bbn.movitfriends.common.Constants
-import com.bbn.movitfriends.common.NetworkHelper
-import com.bbn.movitfriends.common.Resource
-import com.bbn.movitfriends.common.Result
+import com.bbn.movitfriends.common.*
 import com.bbn.movitfriends.domain.interfaces.UserCallBack
 import com.bbn.movitfriends.domain.model.User
-import com.bbn.movitfriends.domain.use_case.profile.GetUserUseCase
-import com.bbn.movitfriends.domain.use_case.profile.IsMeUseCase
-import com.bbn.movitfriends.domain.use_case.profile.UpdateProfileUseCase
+import com.bbn.movitfriends.domain.repository.UserRepository
 import com.bbn.movitfriends.domain.use_case.request.GetRequestStateUseCase
 import com.bbn.movitfriends.domain.use_case.request.SendRequestUseCase
+import com.bbn.movitfriends.presentation.Screen
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val getUserUseCase: GetUserUseCase,
-    private val updateProfileUseCase: UpdateProfileUseCase,
-    private val isMeUseCase: IsMeUseCase,
     private val sendRequestUseCase: SendRequestUseCase,
     private val getRequestStateUseCase: GetRequestStateUseCase,
+    private val userRepository: UserRepository,
     private val networkHelper: NetworkHelper,
+    private val loginUser: FirebaseUser?,
     savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : ViewModel(), UserCallBack {
 
     private val _state = mutableStateOf(ProfileState())
     val state: State<ProfileState> = _state
 
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
     init {
+
+        Log.d("ProfileViewModel", "Initialized")
+
         savedStateHandle.get<String>(Constants.PARAM_USER_ID)?.let {
-            Log.d("ProfileViewModel", "saved user id: $it")
-            if(networkHelper.isNetworkConnected()) {
+            if (networkHelper.isNetworkConnected()) {
                 getUser(it)
-                getRequestState(it)
-            }
-            else
-                _state.value = ProfileState(error = NetworkErrorException().localizedMessage)
+            } else
+                sendUiEvent(UiEvent.ShowError(NetworkErrorException().localizedMessage ?: "Connection error!"))
         }
     }
 
-    private fun getUser(userUid: String) {
-        Log.d("ProfileViewModel", "getUser: $userUid")
-        getUserUseCase(userUid, object : UserCallBack {
-            override fun onCallBack(user: User) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    _state.value = ProfileState(user = user, isMe = isMeUseCase(userUid))
-                }
+    fun onEvent(event: ProfileEvent) {
+        when (event) {
+            is ProfileEvent.OnActionClicked -> {
+                if (_state.value.request == "accepted") // It' my friend
+                    sendUiEvent(UiEvent.Navigate(Screen.MessageScreen.route + "/${event.userUid}"))
+                else
+                    sendRequest(event.userUid)
             }
 
-            override fun onFailure(exception: Exception) {
-                _state.value = ProfileState(error = exception.localizedMessage)
+            is ProfileEvent.OnClickEdit -> {
+                sendUiEvent(UiEvent.Navigate(Screen.SettingsScreen.route))
             }
-        }).onEach { result ->
-            when (result) {
-                is Result.Error -> {
-                    _state.value = ProfileState(error = result.message)
-                }
-                is Result.Success -> {_state.value = ProfileState(isLoading = true, isMe = isMeUseCase(userUid))}
+
+            is ProfileEvent.OnBackIconClicked -> {
+                sendUiEvent(UiEvent.NavigatePop)
             }
-        }.launchIn(viewModelScope)
+        }
     }
 
-    private fun getRequestState(uid: String){
+    private fun getUser(userUid: String) = viewModelScope.launch {
+        Log.d("ProfileViewModel", "getUser")
+        sendUiEvent(UiEvent.ShowLoading)
+        userRepository.getUserById(userUid, this@ProfileViewModel)
+    }
+
+    private fun getRequestStateWithMe(uid: String) {
         val stateUser = _state.value.user
-        val isMe = _state.value.isMe
 
         getRequestStateUseCase(uid).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.value = ProfileState(user = stateUser, isMe = isMe, requestState = result.data?: "")
+                    _state.value = ProfileState(user = stateUser, isMe = isMe(uid), request = result.data ?: "")
                 }
                 is Resource.Error -> {
-                    _state.value = ProfileState(error = result.message)
+                    sendUiEvent(UiEvent.ShowError(result.message ?: "Something went wrong! Please, try Again!"))
+                }
+                is Resource.Loading -> {
+                    //_state.value = ProfileState(user = stateUser, isLoading = true)
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun updateProfile(user: User) = viewModelScope.launch{
+    /*fun updateProfile(user: User) = viewModelScope.launch {
         val stateUser = _state.value.user
         val isMe = _state.value.isMe
         val requestState = _state.value.requestState
         updateProfileUseCase(user).onEach { result ->
             when (result) {
                 is Result.Success -> {
-                    _state.value = ProfileState(user = stateUser, isMe = isMe, requestState = requestState)
+                    _state.value =
+                        ProfileState(user = stateUser, isMe = isMe, requestState = requestState)
                 }
                 is Result.Error -> {
-                    _state.value = ProfileState(error = result.message, user = stateUser, isMe = isMe, requestState = requestState)
+                    _state.value = ProfileState(
+                        error = result.message,
+                        user = stateUser,
+                        isMe = isMe,
+                        requestState = requestState
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }*/
+
+    private fun sendRequest(uid: String) {
+        val stateUser = _state.value.user
+        val isMe = _state.value.isMe
+        val request = _state.value.request
+        sendRequestUseCase(uid).onEach { result ->
+            when (result) {
+                is Result.Success -> {
+                    _state.value =
+                        ProfileState(user = stateUser, isMe = isMe, request = request)
+                }
+                is Result.Error -> {
+                    sendUiEvent(UiEvent.ShowError(result.message ?: "Something went wrong! Please, try Again!"))
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun sendRequest(uid: String) {
-        val stateUser = _state.value.user
-        val isMe = _state.value.isMe
-        val requestState = _state.value.requestState
-        sendRequestUseCase(uid).onEach { result ->
-            when (result) {
-                is Result.Success -> {
-                    _state.value = ProfileState(user = stateUser, isMe = isMe, requestState = requestState)
-                }
-                is Result.Error -> {
-                    _state.value = ProfileState(error = result.message, user = stateUser, isMe = isMe, requestState = requestState)
-                }
-            }
-        }.launchIn(viewModelScope)
+    private fun isMe(userUid: String): Boolean {
+        return loginUser?.uid == userUid
+    }
+
+    private fun sendUiEvent(event: UiEvent) = viewModelScope.launch {
+        _uiEvent.send(event)
+    }
+
+    override fun onFailure(error: String) {
+        sendUiEvent(UiEvent.ShowError(error))
+    }
+
+    override fun onCallBack(user: User) {
+        sendUiEvent(UiEvent.TerminateLoading)
+        _state.value = ProfileState(user = user, isMe = isMe(user.id))
+        getRequestStateWithMe(user.id)
     }
 
 }

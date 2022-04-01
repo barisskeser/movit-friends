@@ -17,8 +17,12 @@ import androidx.compose.ui.unit.dp
 import com.bbn.movitfriends.R
 
 @Composable
-fun MessageItem() {
-    Row(modifier = Modifier.padding(all = 8.dp)) {
+fun MessageItem(
+    name: String,
+    message: String,
+    modifier: Modifier
+) {
+    Row(modifier = modifier) {
         Image(
             painter = painterResource(R.drawable.ic_launcher_background),
             contentDescription = null,
@@ -31,7 +35,7 @@ fun MessageItem() {
 
         Column {
             Text(
-                text = "Barış Keser",
+                text = name,
                 color = MaterialTheme.colors.secondaryVariant,
                 style = MaterialTheme.typography.subtitle2
             )
@@ -40,17 +44,11 @@ fun MessageItem() {
 
             Surface(shape = MaterialTheme.shapes.medium, elevation = 1.dp) {
                 Text(
-                    text = "Seni bekledim ama gelmedin. Neredeydin?Seni bekledim ama gelmedin. Neredeydin?Seni bekledim ama gelmedin. Neredeydin?Seni bekledim ama gelmedin. Neredeydin?Seni bekledim ama gelmedin. Neredeydin?",
+                    text = message,
                     modifier = Modifier.padding(all = 4.dp),
                     style = MaterialTheme.typography.body2
                 )
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewMessageItem() {
-    MessageItem()
 }

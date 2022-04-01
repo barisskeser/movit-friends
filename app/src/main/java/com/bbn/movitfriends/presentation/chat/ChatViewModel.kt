@@ -2,51 +2,81 @@ package com.bbn.movitfriends.presentation.chat
 
 import android.accounts.NetworkErrorException
 import android.content.Context
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import android.util.Log
+import android.widget.ArrayAdapter
 import androidx.lifecycle.*
 import com.bbn.movitfriends.common.NetworkHelper
-import com.bbn.movitfriends.common.Resource
-import com.bbn.movitfriends.domain.use_case.chat.GetChatsUseCase
-import com.bbn.movitfriends.presentation.MainActivity
+import com.bbn.movitfriends.common.UiEvent
+import com.bbn.movitfriends.domain.interfaces.ChatCallBack
+import com.bbn.movitfriends.domain.model.Chat
+import com.bbn.movitfriends.domain.repository.ChatRepository
+import com.bbn.movitfriends.presentation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import java.lang.Exception
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val chatsUseCase: GetChatsUseCase,
-    private val networkHelper: NetworkHelper
-): ViewModel() {
-    private val _state = mutableStateOf(ChatState())
-    val state: State<ChatState> = _state
+    private val chatRepository: ChatRepository,
+    private val networkHelper: NetworkHelper,
+    private val context: Context
+) : ViewModel(), ChatCallBack {
+
+    private val _chatsLiveData = MutableLiveData<List<Chat>>()
+    val chatsLiveData: LiveData<List<Chat>> = _chatsLiveData
+
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
+    private val chatsAdapter = ArrayAdapter<Chat>(context, 0, )
+
 
     init {
-        if(networkHelper.isNetworkConnected())
+        Log.d("ChatViewModel", "Opened")
+        if (networkHelper.isNetworkConnected())
             getChats()
         else
-            _state.value = ChatState(error = NetworkErrorException().localizedMessage)
+            sendUiEvent(
+                UiEvent.ShowError(
+                    NetworkErrorException().localizedMessage ?: "Connection Error!"
+                )
+            )
     }
 
-    private fun getChats(){
-        chatsUseCase().onEach { result ->
-            when(result){
-                is Resource.Success -> {
-                    _state.value = ChatState(chatList = result.data)
-                }
-                is Resource.Loading -> {
-                    _state.value = ChatState(isLoading = true)
-                }
-                is Resource.Error -> {
-                    _state.value = ChatState(error = result.message)
-                }
+    fun onEvent(event: ChatEvent) {
+
+        when (event) {
+            is ChatEvent.OnChatClicked -> {
+                sendUiEvent(UiEvent.Navigate(Screen.MessageScreen.route + "/${event.chatID}/${event.userUid}"))
             }
-        }.launchIn(viewModelScope)
+
+            is ChatEvent.OFriendsClicked -> {
+                sendUiEvent(UiEvent.Navigate(Screen.FriendScreen.route))
+            }
+        }
+
     }
 
-    private fun observerLiveData(){
+    private fun getChats() = viewModelScope.launch {
+        Log.d("ChatViewModel", "getChats")
+        sendUiEvent(UiEvent.ShowLoading)
+        chatRepository.getChats(this@ChatViewModel)
+    }
 
+    private fun sendUiEvent(event: UiEvent) = viewModelScope.launch {
+        _uiEvent.send(event)
+    }
+
+    override fun onCallBack(chats: List<Chat>) {
+        sendUiEvent(UiEvent.TerminateLoading)
+        Log.d("ChatViewModel", "onCallBack: $chats")
+        _chatsLiveData.postValue(chats)
+    }
+
+
+    override fun onFailure(error: String) {
+        sendUiEvent(UiEvent.ShowError(error))
     }
 }

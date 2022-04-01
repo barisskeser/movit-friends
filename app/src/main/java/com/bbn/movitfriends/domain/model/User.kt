@@ -6,12 +6,12 @@ import kotlin.collections.HashMap
 
 data class User(
     val status: String = "Offline",
-    val id: String,
+    val id: String = "",
     val username: String = "",
     val fullName: String = "",
     val gender: String = "None",
     val birthDate: DateTime? = DateTime.getDefaultInstance(),
-    val email: String,
+    val email: String = "",
     val lat: Double? = null,
     val lng: Double? = null,
     val isAdBlocked: Boolean = false,

@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bbn.movitfriends.common.Constants
 import com.bbn.movitfriends.presentation.chat.ChatScreen
 import com.bbn.movitfriends.presentation.login.LoginScreen
+import com.bbn.movitfriends.presentation.message.MessageScreen
 import com.bbn.movitfriends.presentation.profile.ProfileScreen
 import com.bbn.movitfriends.presentation.register.RegisterScreen
 import com.bbn.movitfriends.presentation.ui.theme.MovitFriendsTheme
@@ -48,12 +49,25 @@ class MainActivity: ComponentActivity() {
                         composable(
                             route = Screen.ProfileScreen.route + "/{${Constants.PARAM_USER_ID}}"
                         ){
-                            ProfileScreen(navController = navController)
+                            ProfileScreen(
+                                navController = navController
+                            )
                         }
                         composable(
                             route = Screen.ChatScreen.route
                         ){
-                            ChatScreen(navController = navController)
+                            ChatScreen(
+                                lifecycleOwner = this@MainActivity,
+                                navController = navController
+                            )
+                        }
+                        composable(
+                            route = Screen.MessageScreen.route + "/{${Constants.PARAM_CHAT_ID}}/{${Constants.PARAM_USER_ID}}"
+                        ){
+                            MessageScreen(
+                                lifecycleOwner = this@MainActivity,
+                                navController = navController
+                            )
                         }
                     }
                 }

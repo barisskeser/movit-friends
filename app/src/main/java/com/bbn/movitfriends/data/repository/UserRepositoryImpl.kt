@@ -11,7 +11,6 @@ import com.bbn.movitfriends.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.StorageReference
-import com.google.type.DateTime
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -22,13 +21,20 @@ class UserRepositoryImpl @Inject constructor(
     private val dataStore: FilterDataStoreManager
 ) : UserRepository {
 
-    private val TAG = "UserRepositoryImpl"
+    private val TAG = "ProfileUserRepositoryImpl"
     private lateinit var userList: List<User>
 
-    override suspend fun getUserById(uid: String, userCallBack: UserCallBack) {
+    override fun getUserById(uid: String, userCallBack: UserCallBack) {
+
+        Log.d(TAG, "getUserById: ")
+
         firestore.collection(Constants.USER_COLLECTION).document(uid).get()
             .addOnSuccessListener { user ->
-                user.let {
+
+                Log.d(TAG, "addOnSuccessListener: $user")
+                Log.d(TAG, "addOnSuccessListener: $userCallBack")
+                user.let { it ->
+                    Log.d(TAG, "addOnSuccessListener: $it")
                     val response = User(
                         username = it.getString("username")!!,
                         fullName = it.getString("fullName")!!,
@@ -41,10 +47,11 @@ class UserRepositoryImpl @Inject constructor(
                         id = it.getString("id")!!,
                         createDate = it.getString("createDate")!!
                     )
+                    Log.d(TAG, "addOnSuccessListener to call back: $response")
                     userCallBack.onCallBack(response)
                 }
             }.addOnFailureListener {
-                userCallBack.onFailure(it)
+                userCallBack.onFailure(it.localizedMessage ?: "An unexpected error occured!")
             }
     }
 

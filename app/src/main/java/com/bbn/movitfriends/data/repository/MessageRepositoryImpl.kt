@@ -1,104 +1,42 @@
 package com.bbn.movitfriends.data.repository
 
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.lifecycle.MutableLiveData
 import com.bbn.movitfriends.common.Constants
+import com.bbn.movitfriends.domain.interfaces.MessageCallBack
 import com.bbn.movitfriends.domain.model.Message
-import com.bbn.movitfriends.domain.model.toHashMap
 import com.bbn.movitfriends.domain.repository.MessageRepository
-import com.bbn.movitfriends.domain.repository.UserRepository
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.callbackFlow
+import com.google.firebase.Timestamp
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.getValue
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class MessageRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore,
-    private val loginUser: FirebaseUser?,
-    private val userRepository: UserRepository
-): MessageRepository {
+    private val database: DatabaseReference
+) : MessageRepository {
 
-    private var _messageList: MutableLiveData<ArrayList<Message>> = MutableLiveData<ArrayList<Message>>()
-    private var _message: MutableLiveData<Message> = MutableLiveData<Message>()
-    private val TAG: String = "MessageRepository"
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getMessages(friendUid: String): MutableLiveData<ArrayList<Message>> {
-        firestore.collection(Constants.MESSAGE_COLLECTION)
-            .whereIn("to", listOf(friendUid, loginUser?.uid))
-            .whereIn("from", listOf(friendUid, loginUser?.uid))
-            .addSnapshotListener{ snapshot, error ->
-
-                if(error != null){
-                    Log.d("MessageRepository", "getMessages: " + error.localizedMessage)
-                    return@addSnapshotListener
-                }
-
-                val messageList = ArrayList<Message>()
-                snapshot?.forEach { message ->
-                    callbackFlow<UserRepository> {
-                        /*val userMessage = Message(
-                            id = message.id,
-                            from = message.getString("from")?.let { userRepository.getUserById(it) },
-                            to = message.getString("to")?.let { userRepository.getUserById(it) },
-                            text = message.getString("message"),
-                            time = message.getTimestamp("time"),
-                            isSeen = message.getBoolean("isSeen")
-                        )
-
-                        messageList.add(userMessage)*/
-                    }
-                }
-
-                _messageList.value = messageList
-
+    override suspend fun getMessages(chatID: String, messageCallBack: MessageCallBack) {
+        database.child(Constants.CHAT_CHILD).child(chatID).child(Constants.MESSAGE_CHILD).orderByChild("time").addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                messageCallBack.onCallBack(
+                    snapshot.children.map { it.getValue<Message>()!! }
+                )
             }
 
-        return _messageList
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getLastMessageWithUser(userUid: String): MutableLiveData<Message> {
-        firestore.collection(Constants.MESSAGE_COLLECTION)
-            .whereIn("to", listOf(userUid, loginUser?.uid))
-            .whereIn("from", listOf(userUid, loginUser?.uid))
-            .addSnapshotListener{ snapshot, error ->
-
-                if(error != null){
-                    Log.d("MessageRepository", "getLastMessageWithUser: " + error.localizedMessage)
-                    return@addSnapshotListener
-                }
-
-                val lastMessage = snapshot?.last()
-
-                callbackFlow<UserRepository> {
-                    lastMessage?.let {
-                        val message = Message(
-                            id = it.id,
-                            from = it.getString("from")!!,
-                            to = it.getString("to")!!,
-                            text = it.getString("message")!!,
-                            time = it.getTimestamp("time")!!,
-                            isSeen = it.getBoolean("isSeen")!!
-                        )
-                        _message.value = message
-                    }
-                }
-
+            override fun onCancelled(error: DatabaseError) {
+                messageCallBack.onFailure(error.toException().localizedMessage ?: "An unexpected error occured!")
             }
 
-        return _message
+        })
     }
 
-    override suspend fun sendMessage(message: Message) {
-        firestore.collection(Constants.MESSAGE_COLLECTION).add(message.toHashMap()).addOnSuccessListener {
-            Log.d(TAG, "insertMessage: Success")
-        }.addOnFailureListener {
-            Log.d(TAG, "insertMessage: Failure")
-        }.addOnCanceledListener {
-            Log.d(TAG, "insertMessage: Canceled")
-        }
+    override suspend fun sendMessage(chatID: String, message: Message) {
+        // Create a chat if not exists and add messages
+        database.child(Constants.CHAT_CHILD).child(chatID).child(Constants.MESSAGE_CHILD).child(message.id).setValue(message)
+        database.child(Constants.CHAT_CHILD).child(chatID).child("members").setValue(listOf(message.from, message.to))
+        database.child(Constants.CHAT_CHILD).child(chatID).child("lastMessage").setValue(message.text)
+        database.child(Constants.CHAT_CHILD).child(chatID).child("from").setValue(message.from)
+        database.child(Constants.CHAT_CHILD).child(chatID).child("time").setValue(message.time)
     }
 }

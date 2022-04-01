@@ -23,7 +23,6 @@ import androidx.navigation.NavController
 import com.bbn.movitfriends.R
 import com.bbn.movitfriends.common.UiEvent
 import com.bbn.movitfriends.presentation.Screen
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun LoginScreen(
@@ -54,7 +53,9 @@ fun LoginScreen(
                 when(event){
                     is UiEvent.Navigate -> {
                         loading.value = false
-                        navController.navigate(event.route)
+                        navController.navigate(event.route) {
+                            popUpTo(0)
+                        }
                     }
 
                     is UiEvent.ShowError -> {

@@ -1,7 +1,5 @@
 package com.bbn.movitfriends.presentation.register
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bbn.movitfriends.common.UiEvent
@@ -21,9 +19,6 @@ class RegisterViewModel @Inject constructor(
     private val firebaseAuthService: FirebaseAuthService,
     private val userRepository: UserRepository
 ) : ViewModel(), RegisterCallBack {
-
-    private val _state = mutableStateOf(RegisterState())
-    val state: State<RegisterState> = _state
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -76,6 +71,7 @@ class RegisterViewModel @Inject constructor(
 
     override fun onCreateUserCallBack(userUid: String) {
         sendUiEvent(UiEvent.Navigate(Screen.ProfileScreen.route + "/$userUid"))
+        //sendUiEvent(UiEvent.Navigate(Screen.ChatScreen.route))
     }
 
     override fun onFailure(error: String) {

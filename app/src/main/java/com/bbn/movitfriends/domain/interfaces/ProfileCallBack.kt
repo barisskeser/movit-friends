@@ -1,9 +1,9 @@
 package com.bbn.movitfriends.domain.interfaces
 
+import android.service.autofill.OnClickAction
 import com.bbn.movitfriends.domain.model.User
-import java.lang.Exception
 
-interface UserCallBack {
+interface ProfileCallBack {
 
     fun onCallBack(user: User)
 

@@ -1,54 +1,77 @@
 package com.bbn.movitfriends.data.repository
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
+import android.widget.ArrayAdapter
 import com.bbn.movitfriends.common.Constants
+import com.bbn.movitfriends.domain.interfaces.ChatCallBack
 import com.bbn.movitfriends.domain.interfaces.UserCallBack
 import com.bbn.movitfriends.domain.model.Chat
+import com.bbn.movitfriends.domain.model.User
 import com.bbn.movitfriends.domain.repository.ChatRepository
-import com.bbn.movitfriends.domain.repository.MessageRepository
 import com.bbn.movitfriends.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore,
+    private val database: DatabaseReference,
     private val userRepository: UserRepository,
-    private val messageRepository: MessageRepository,
-    private val loginUser: FirebaseUser?
+    private val loginUser: FirebaseUser?,
+    private val context: Context
 ) : ChatRepository {
 
-    private var _chats: MutableLiveData<ArrayList<Chat>> = MutableLiveData(ArrayList<Chat>())
-
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getChats(): MutableLiveData<ArrayList<Chat>> {
-        firestore.collection(Constants.CHAT_COLLECTION).addSnapshotListener{ snapshot, error ->
-            if(error != null){
-                Log.d("ChatRepository", "getChats: " + error.localizedMessage ?: "An unexpected error occured")
-                return@addSnapshotListener
-            }
-            val chats = ArrayList<Chat>()
-            snapshot?.forEach { chat ->
-                if(chat.getString("from").equals(loginUser?.uid) || chat.getString("to").equals(loginUser?.uid)){
-                    val otherUserId = if(chat.getString("from").equals(loginUser?.uid))
-                        chat.getString("to")
-                    else
-                        chat.getString("from")
-                    callbackFlow<UserRepository> {
-                        val chat = Chat(
-                            userUid = otherUserId!!,
-                            lastMessage = otherUserId.let { messageRepository.getLastMessageWithUser(it) }
-                        )
-                        chats.add(chat)
-                    }
-                }
-            }
-            _chats.value = chats
-        }
-        return _chats
+    override suspend fun getChats(chatCallBack: ChatCallBack) {
+       database.child(Constants.CHAT_CHILD).orderByChild("time").addValueEventListener(object: ValueEventListener {
+           override fun onDataChange(snapshot: DataSnapshot) {
+
+               val chats = ArrayList<Chat>()
+               val chatsAdapter = ArrayAdapter<Chat>(context, 0, chats)
+               for(chat in snapshot.children){
+
+                   val members = chat.child("members")
+                   var isForMe = false
+                   var otherUser = ""
+
+                   for (member in members.children){
+                       if (member.value.toString() == loginUser!!.uid)
+                           isForMe = true
+                       else
+                           otherUser = member.value.toString()
+                   }
+
+                   if(isForMe){
+                       userRepository.getUserById(otherUser, object : UserCallBack {
+                           override fun onCallBack(user: User) {
+                               chats.add(
+                                   Chat(
+                                       chatID = chat.key!!,
+                                       userUid = otherUser,
+                                       lastMessage = chat.child("lastMessage").value.toString(),
+                                       name = user.fullName,
+                                       imageUrl = user.imageUrl
+                                   )
+                               )
+
+                               chatCallBack.onCallBack(chats)
+                           }
+
+                           override fun onFailure(error: String) {
+                               TODO("Not yet implemented")
+                           }
+                       })
+                   }
+               }
+           }
+
+           override fun onCancelled(error: DatabaseError) {
+               chatCallBack.onFailure(error.toException().localizedMessage ?: "An unexpected error occured!")
+           }
+
+       })
     }
 }

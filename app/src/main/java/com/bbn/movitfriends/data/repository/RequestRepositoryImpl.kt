@@ -73,7 +73,8 @@ class RequestRepositoryImpl @Inject constructor(
 
         val result = firestore.collection(Constants.REQUEST_COLLECTION)
             .whereEqualTo("status", "accepted")
-            .whereArrayContains(FieldPath.of("from", "to"), listOf(uid, loginUser?.uid))
+            .whereIn("from", listOf(uid, loginUser?.uid))
+            .whereIn("to", listOf(uid, loginUser?.uid))
             .get()
             .result?.first()
 

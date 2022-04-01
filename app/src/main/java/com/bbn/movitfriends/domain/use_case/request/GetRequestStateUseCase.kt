@@ -13,6 +13,7 @@ class GetRequestStateUseCase @Inject constructor(
 
     operator fun invoke(uid: String): Flow<Resource<String?>> = flow {
         try {
+            emit(Resource.Loading<String?>())
             val state = repository.getRequestState(uid)
             emit(Resource.Success<String?>(state))
         } catch (e: Exception){
